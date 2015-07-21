@@ -1,18 +1,21 @@
 
 var util         = require ('util');
 var EventEmitter = require ('events').EventEmitter;
-var bunyan       = require ('bunyan');
+var os           = require ('os');
 var async        = require ('async');
+var MongoDB      = require ('mongodb');
 var submergence  = require ('submergence');
+var substation   = require ('substation');
 var filth        = require ('filth');
 var cachew       = require ('cachew');
 var Gateway      = require ('./lib/Gateway');
+var Action       = require ('./lib/Action');
 
-var GetSession   = require ('./ControlActions/GetSession');
-var PostSession  = require ('./ControlActions/PostSession');
-var PostEvent    = require ('./ControlActions/PostEvent');
-var GetConfig    = require ('./ControlActions/GetConfig');
-var PutConfig    = require ('./ControlActions/PutConfig');
+var GetSession   = require ('./lib/ControlActions/GetSession');
+var PostSession  = require ('./lib/ControlActions/PostSession');
+var PostEvent    = require ('./lib/ControlActions/PostEvent');
+var GetConfig    = require ('./lib/ControlActions/GetConfig');
+var PutConfig    = require ('./lib/ControlActions/PutConfig');
 
 /**     @struct sublayer.Configuration
     @super submergence.Configuration
@@ -27,6 +30,7 @@ var PutConfig    = require ('./ControlActions/PutConfig');
 var DEFAULT_CONFIG = {
     databaseName:           "sublayer",
     applicationName:        "sublayer",
+    domainCollectionName:   "Domain",
     actionDefaults:         {},
     domainCacheLength:      2048,
     domainCacheTimout:      1000 * 60
@@ -47,62 +51,107 @@ function sublayer (config) {
     if (!(this instanceof sublayer))
         return new sublayer (config);
 
-    this.config = filth.clone (DEFAULT_CONFIG);
+    this.config = filth.clone (submergence.DEFAULT_CONFIG);
+    filth.merge (this.config, DEFAULT_CONFIG);
     filth.merge (this.config, config);
 
     this.server = new submergence (this.config);
     this.logger = this.server.logger;
-    this.gateway = new Gateway (this, this.config);
-    this.controlRouter = new substation.Router (this.server, this.config);
-
-    var self = this;
-    this.getDomain = function (domain, callback) {
-        var cached;
-        if (self.cache && cached = self.cache.get (domain))
-            return callback (cached);
-
-        self.collection.findOne ({ domain:domain }, function (err, domainRecord) {
-            if (err) {
-                self.logger.error ({ domain:domain }, 'failed to look up domain');
-                return callback();
-            }
-            if (!domainRecord)
-                return callback();
-
-            if (domainRecord.actions && domainRecord.actions.length) {
-                for (var i=0,j=domainRecord.actions.length; i<j; i++)
-                    domainRecord.actions[i] = new Action (
-                        domain,
-                        domainRecord.apiHash,
-                        domainRecord.actions[i]
-                    );
-            }
-
-            if (self.cache)
-                self.cache.set (domain, domainRecord);
-
-            callback (domainRecord);
-        });
-    };
+    this.gateway = new Gateway (this, this.config, this.server);
+    this.adminRouter = new substation.Router (this, this.config);
 }
 module.exports = sublayer;
+
+sublayer.prototype.getDomain = function (domain, callback) {
+    var cached;
+    if (this.domainCache && ( cached = this.domainCache.get (domain) ))
+        return callback (undefined, cached);
+
+    var self = this;
+    this.DomainCollection.findOne ({ domain:domain }, function (err, domainRecord) {
+        if (err) {
+            self.logger.error ({ domain:domain }, 'failed to look up domain');
+            return callback (err);
+        }
+        if (!domainRecord)
+            return callback();
+
+        if (domainRecord.actions && domainRecord.actions.length) {
+            for (var i=0,j=domainRecord.actions.length; i<j; i++)
+                domainRecord.actions[i] = new Action (
+                    domain,
+                    domainRecord.apiHash,
+                    domainRecord.actions[i]
+                );
+        }
+
+        if (self.domainCache)
+            self.domainCache.set (domain, domainRecord);
+
+        callback (undefined, domainRecord);
+    });
+};
 
 /**     @member/Function listen
 @argument/Number port
 @callback
     @argument/Error|undefined err
 */
-sublayer.prototype.listen = function (port, controlPort, callback) {
+sublayer.prototype.listen = function (port, adminPort, callback) {
+    var self = this;
+
     if (this.config.domainCacheLength)
-        this.cache = new cachew.ChainCache (
+        this.domainCache = new cachew.ChainCache (
             this.config.domainCacheLength,
             this.config.domainCacheTimout
         );
 
-    var self = this;
-    self.gateway.init (router, function(){
-        self.server.listen (port, self.gateway, function(){
-            self.server.listen (controlPort, self.controlRouter, callback);
+    if (this.config.DomainCollection) {
+        this.DomainCollection = this.config.DomainCollection;
+        this.gateway.init (router, function(){
+            self.server.listen (port, self.gateway, function(){
+                self.server.listen (adminPort, self.adminRouter, callback);
+            });
+        });
+        return;
+    }
+
+    this.adminRouter.addAction ('GET', 'session', GetSession);
+    this.adminRouter.addAction ('POST', 'session', PostSession);
+    this.adminRouter.addAction ('POST', 'event', PostEvent);
+    this.adminRouter.addAction ('GET', 'config', GetConfig);
+    this.adminRouter.addAction ('PUT', 'config', PutConfig);
+
+    var Database = new MongoDB.Db (
+        this.config.databaseName,
+        new MongoDB.Server (this.config.databaseAddress, this.config.databasePort),
+        { w:'majority', journal:true }
+    );
+    Database.open (function (err) {
+        if (err) {
+            self.logger.fatal (err);
+            return;
+        }
+        Database.collection (self.config.domainCollectionName, function (err, collection) {
+            if (err) {
+                self.logger.fatal (err);
+                return process.exit (1);
+            }
+            self.DomainCollection = collection;
+            self.gateway.init (function(){
+                self.server.listen (port, self.gateway, function(){
+                    self.adminRouter.init (function(){
+                        self.server.listen (adminPort, self.adminRouter, function(){
+                            self.nodeInfo = {
+                                port:       port,
+                                adminPort:  adminPort,
+                                hostname:   os.hostname()
+                            };
+                            callback();
+                        });
+                    });
+                });
+            });
         });
     });
 };
