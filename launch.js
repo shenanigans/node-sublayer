@@ -66,4 +66,4 @@ layer.listen (port, adminPort, function (err) {
     layer.logger.info (layer.nodeInfo, 'layer node online');
 });
 
-setInterval (function(){ console.log ('am I losing my mind?'); }, 3000);
+setInterval (function(){ layer.logger.info ('am I losing my mind?'); }, 3000);
