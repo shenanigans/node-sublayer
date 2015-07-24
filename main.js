@@ -80,7 +80,7 @@ sublayer.prototype.getDomain = function (domain, callback) {
             for (var i=0,j=domainRecord.actions.length; i<j; i++)
                 domainRecord.actions[i] = new Action (
                     domain,
-                    domainRecord.apiHash,
+                    domainRecord.APIHash,
                     domainRecord.actions[i]
                 );
         }
