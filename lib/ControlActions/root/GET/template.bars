@@ -54,7 +54,7 @@ h3 {
         <div id="HeaderContent">
             <a id="Hero" href="/">Sublayer.io</a>
             <div id="Nav">
-                <a href="example.com">News</a><a href="/pricing">Pricing</a><a href="static/documents/index.html">Documentation</a>
+                <a href="static/news.html">News</a><a href="/pricing">Pricing</a><a href="static/documents/index.html">Documentation</a>
             </div>
             {{#if Authentication.isLoggedIn}}
                 <form id="Auth" action="/logout">
