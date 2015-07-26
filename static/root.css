@@ -97,9 +97,10 @@ h3 {
     display: inline-block;
     text-align: left;
     width: 16em;
-    height: 10em;
+    height: 12em;
     margin: 0 1em 2em 1em;
     vertical-align: top;
+    line-height: 1.25em;
 }
 
 .feature p {
