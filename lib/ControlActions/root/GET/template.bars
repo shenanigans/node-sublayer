@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sublayer.io</title>
+    <link rel="stylesheet" type="text/css" href="static/root.css" />
+</head>
+<body>
+    <div id="Header">
+        <div id="HeaderContent">
+            <a id="Hero" href="/">Sublayer.io</a>
+            <div id="Nav">
+                <a href="example.com">News</a><a href="/pricing">Pricing</a><a href="static/documents/index.html">Documentation</a>
+            </div>
+            {{#if Authentication.isLoggedIn}}
+                <form id="Auth" action="/logout">
+                    <span class="username">{{username}}</span>
+                    <input type="submit" value="log out" />
+                </form>
+            {{else}}
+                <div id="Auth">
+                    <a href="static/register.html">sign up</a><a href="static/login.html">log in</a>
+                </div>
+            {{/if}}
+        </div>
+    </div>
+    <div id="Graphic">
+
+    </div>
+    <div class="subheader">Do <span class="buzzword">realtime</span> and <span class="buzzword">peer-to-peer</span> <div class="chunk">the way you want it.</div></div>
+    <div id="Features">
+        <div id="Session Management" class="feature">
+            <h3>Session Management</h3>
+            <p>Sublayer manages client cookies, tracks session status and performs all the other management work that comes with having user accounts. You define what it means to be a User, we tell you which Users are accessing your app.</p>
+        </div>
+        <div id="Device Access" class="feature">
+            <h3>Device Access</h3>
+            <p>Sometimes it's not enough to know who is using your app - sometimes you need to know <i>how</i>. Sublayer tracks the individual client devices used to access your app and routes realtime events directly to them.</p>
+        </div>
+        <div id="Realtime" class="feature">
+            <h3>Real Time Events</h3>
+            <p>To make it easier to leverage the power of Socket.io, Sublayer routes events directly to your Users without requiring them to "subscribe" or "join" anything in advance.</p>
+        </div>
+        <div id="PeerToPeer" class="feature">
+            <h3>Easy Peer To Peer</h3>
+            <p>WebRTC is a very powerful tool but not so easy to implement in a real application. Sublayer makes WebRTC easy with a fast signaling server and client tools that take all the pain out of connection negotiation and multimedia streaming.</p>
+        </div>
+        <div id="Caching" class="feature">
+            <h3>Intelligent API Cache</h3>
+            <p>Serving content from a cache is a good idea, but most caches are limited to static public content. Sublayer can improve cache performance by repeating dynamic requests for logged in users or even individual devices.</p>
+        </div>
+        <div id="Request Safety" class="feature">
+            <h3>Request Safety</h3>
+            <p>By routing requests early and validating query and body content with JSON Schema on the server side, Sublayer helps ensure that no confusing or hostile requests even reach your app servers.</p>
+        </div>
+        <div id="Scaling" class="feature">
+            <h3>Deploy At Scale</h3>
+            <p>We have only one speed - fast. Whether you're demonstrating a class projecting or deploying the future of telecommunications, the full capacity of our cluster is at your disposal. We only charge for the resources you actually use.</p>
+        </div>
+    </div>
+    <div id="Footer">
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,116 @@
+
+html {
+    font-family: sans-serif;
+    background-color: #EFEFEF;
+    background-image: url('bg_large.jpg');
+    background-attachment: fixed;
+    background-position: 0% 20%;
+    background-size: cover;
+}
+
+body {
+    max-width: 1024px;
+    margin: auto;
+    margin-top: 35em;
+    padding: 1.75em 1em 0 1em;
+    background-color: #fff;
+    box-shadow: 0 0 3em #000000;
+}
+
+#Header {
+    height: 2.4em;
+    background-color: #FF24DF;
+    margin-bottom: 2em;
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    box-shadow: 0 0 2em rgb(0, 0, 0);
+}
+
+#HeaderContent {
+    max-width: 1024px;
+    margin: auto;
+    position: relative;
+}
+
+#Hero {
+    color: #fff;
+    font-size: 180%;
+    text-decoration: none;
+    margin: 0.07em 0 0 0.5em;
+    display: inline-block;
+}
+
+#Nav {
+    display: inline-block;
+    margin-left: 1em;
+    position: absolute;
+}
+
+#Nav a, #Auth a {
+    color: #fff;
+    background-color: #FF24DF;
+    text-decoration: none;
+    display: inline-block;
+    padding: 0.75em 0.6em 0.5em 0.6em;
+    transition: background-color 0.5s ease-out, color 0.5s ease-out;
+}
+
+#Nav a:hover, #Auth a:hover {
+    color: #FF24DF;
+    background-color: #fff;
+}
+
+#Auth {
+    position: absolute;
+    top: 0;
+    right: 0.5em;
+    height: 2em;
+}
+
+.subheader {
+    font-size: 210%;
+    margin: 0 0 1.3em 0;
+    text-align: center;
+}
+
+.chunk {
+    display: inline-block;
+}
+
+.buzzword {
+    color: #FF24DF;
+}
+
+h3 {
+    color: #FF24DF;
+    margin: 0 0 0.4em 0;
+}
+
+#Features {
+    text-align: center;
+}
+
+.feature {
+    display: inline-block;
+    text-align: left;
+    width: 16em;
+    height: 10em;
+    margin: 0 1em 2em 1em;
+    vertical-align: top;
+}
+
+.feature p {
+    margin: 0;
+    padding: 0.3em;
+    border-top: 1px solid #CEBECB;
+    color: #2F2F2F;
+}
+
+#Footer {
+    height: 3em;
+
+    background-color: #FDBBF4;
+    margin: 5em -1em 0 -1em;
+}

@@ -16,6 +16,7 @@ var PostSession  = require ('./lib/ControlActions/PostSession');
 var PostEvent    = require ('./lib/ControlActions/PostEvent');
 var GetConfig    = require ('./lib/ControlActions/GetConfig');
 var PutConfig    = require ('./lib/ControlActions/PutConfig');
+var RootActions  = require ('./lib/ControlActions/root');
 
 /**     @struct sublayer.Configuration
     @super submergence.Configuration
@@ -121,6 +122,7 @@ sublayer.prototype.listen = function (port, adminPort, callback) {
     this.adminRouter.addAction ('POST', 'event', PostEvent);
     this.adminRouter.addAction ('GET', 'config', GetConfig);
     this.adminRouter.addAction ('PUT', 'config', PutConfig);
+    this.adminRouter.addAction ('GET', undefined, RootActions.GET);
 
     var Database = new MongoDB.Db (
         this.config.databaseName,
