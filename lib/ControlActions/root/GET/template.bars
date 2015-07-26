@@ -86,10 +86,10 @@ h3 {
             <h3>Easy Peer To Peer</h3>
             <p>WebRTC is a very powerful tool but not so easy to implement in a real application. Sublayer makes WebRTC easy with a fast signaling server and client tools that take all the pain out of connection negotiation and multimedia streaming.</p>
         </div>
-        <div id="Caching" class="feature">
+        <!-- <div id="Caching" class="feature">
             <h3>Intelligent API Cache</h3>
             <p>Serving content from a cache is a good idea, but most caches are limited to static public content. Sublayer can improve cache performance by repeating dynamic requests for logged in users or even individual devices.</p>
-        </div>
+        </div> -->
         <div id="Request Safety" class="feature">
             <h3>Request Safety</h3>
             <p>By routing requests early and validating query and body content with JSON Schema on the server side, Sublayer helps ensure that no confusing or hostile requests even reach your app servers.</p>
