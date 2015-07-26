@@ -32,7 +32,7 @@ h1, h2, h3, h4, h5 {
 }
 
 #HeaderContent {
-    max-width: 1024px;
+    max-width: 995px;
     margin: auto;
     position: relative;
 }
@@ -41,7 +41,7 @@ h1, h2, h3, h4, h5 {
     color: #fff;
     font-size: 180%;
     text-decoration: none;
-    margin: 0.07em 0 0 0.5em;
+    margin: 0.07em 0 0 0;
     display: inline-block;
 }
 
@@ -69,7 +69,7 @@ h1, h2, h3, h4, h5 {
 #Auth {
     position: absolute;
     top: 0;
-    right: 0.5em;
+    right: 0;
     height: 2em;
 }
 
