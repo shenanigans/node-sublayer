@@ -4,8 +4,8 @@ label {
     display: inline-block;
     text-align: right;
     color: #FF24DF;
-    border-bottom: 1px solid #FFAFF3;
-    font-size: 125%;
+    font-size: 115%;
+    margin-right: 0.2em;
 }
 
 input[type="text"], input[type="password"] {
@@ -26,4 +26,22 @@ input[type="submit"] {
     font-size: 130%;
     color: #fff;
     padding: 0.3em 0.6em;
+    cursor: pointer;
+    transition: background-color 0.5s ease-out, color 0.5s ease-out;
+}
+
+input[type="submit"]:focus {
+    outline: 1px solid #FF24DF;
+    background-color: #fff;
+    color: #FF24DF;
+}
+
+input[type="submit"]:hover {
+    color: #FF24DF;
+    outline: 1px solid #FF24DF;
+    background-color: #fff;
+}
+
+.bees {
+    display: none;
 }

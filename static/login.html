@@ -5,16 +5,29 @@
     <link rel="stylesheet" type="text/css" href="site.css" />
     <link rel="stylesheet" type="text/css" href="forms.css" />
     <style type="text/css">
-#RegisterForm {
+#LoginForm {
     text-align: center;
+    margin-bottom: 1.5em;
 }
 
 label {
     margin-bottom: 1em;
 }
 
+input[type="text"], input[type="password"] {
+    margin-left: 0.1em;
+}
+
 input[type="submit"] {
     margin-top: 1em;
+}
+
+#Recovery {
+    text-align: center;
+}
+
+#Recovery a {
+    color: #7B7BFF;
 }
     </style>
 </head>
@@ -26,33 +39,23 @@ input[type="submit"] {
                 <a href="example.com">News</a><a href="/pricing">Pricing</a><a href="static/documents/index.html">Documentation</a>
             </div>
             <div id="Auth">
-                <a href="login.html">log in</a>
+                <a href="register.html">sign up</a>
             </div>
         </div>
     </div>
-    <form id="RegisterForm">
-        <h1>Create an Account</h1>
+    <form id="LoginForm">
+        <h1>Log In</h1>
         <label for="Username">username</label>
-        <input id="Username" type="text" />
-        <br />
-        <label for="Email">email address</label>
-        <input id="Email" type="text" />
+        <input id="Username" type="text"></input>
         <br />
         <label for="Password">password</label>
-        <input id="Password" type="password" />
+        <input id="Password" type="password"></input>
         <br />
-        <label for="ConfirmPassword">confirm password</label>
-        <input id="ConfirmPassword" type="password" />
-        <br />
-        <input id="Homepage" class="bees" name="homepage" />
-        <div id="CAPTCHA">
-            <noscript>
-                <h3 class="error">Scripts Disabled</h3>
-                <p>Javascript must be enabled to register or log in to this site.</p>
-            </noscript>
-        </div>
-        <input type="submit" value="Register" disabled />
+        <input type="submit" value="Log In" />
     </form>
+    <div id="Recovery">
+        <a href="recovery.html">I forgot my username or password</a>
+    </div>
     <div id="Footer">
 
     </div>
