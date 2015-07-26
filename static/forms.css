@@ -1,0 +1,29 @@
+
+label {
+    min-width: 10em;
+    display: inline-block;
+    text-align: right;
+    color: #FF24DF;
+    border-bottom: 1px solid #FFAFF3;
+    font-size: 125%;
+}
+
+input[type="text"], input[type="password"] {
+    border: none;
+    font-size: 100%;
+    padding: 0.2em 0.2em 0.05em;
+    border-bottom: 1px solid #FFAFF3;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+    background-color: #FFDAFA;
+    outline: none;
+}
+
+input[type="submit"] {
+    background-color: #FF24DF;
+    border: none;
+    font-size: 130%;
+    color: #fff;
+    padding: 0.3em 0.6em;
+}

@@ -11,10 +11,13 @@ html {
 body {
     max-width: 1024px;
     margin: auto;
-    margin-top: 30em;
-    padding: 1.75em 1em 0 1em;
+    padding: 4em 1em 0 1em;
     background-color: #fff;
     box-shadow: 0 0 3em #000000;
+}
+
+h1, h2, h3, h4, h5 {
+    color: #FF24DF;
 }
 
 #Header {
@@ -25,7 +28,7 @@ body {
     left: 0;
     top: 0;
     right: 0;
-    box-shadow: 0 0 2em rgb(0, 0, 0);
+    box-shadow: 0 0 2em rgba(0, 0, 0, 0.71);
 }
 
 #HeaderContent {
@@ -70,49 +73,8 @@ body {
     height: 2em;
 }
 
-.subheader {
-    font-size: 210%;
-    margin: 0 0 1.3em 0;
-    text-align: center;
-}
-
-.chunk {
-    display: inline-block;
-}
-
-.buzzword {
-    color: #FF24DF;
-}
-
-h3 {
-    color: #FF24DF;
-    margin: 0 0 0.4em 0;
-}
-
-#Features {
-    text-align: center;
-}
-
-.feature {
-    display: inline-block;
-    text-align: left;
-    width: 16em;
-    height: 12em;
-    margin: 0 1em 2em 1em;
-    vertical-align: top;
-    line-height: 1.25em;
-}
-
-.feature p {
-    margin: 0;
-    padding: 0.3em;
-    border-top: 1px solid #CEBECB;
-    color: #2F2F2F;
-}
-
 #Footer {
     height: 3em;
-
     background-color: #FDBBF4;
     margin: 5em -1em 0 -1em;
 }
