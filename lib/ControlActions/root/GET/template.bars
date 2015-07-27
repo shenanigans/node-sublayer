@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Sublayer.io</title>
-    <base href="../../../../" />
+    <!-- <base href="../../../../" /> -->
     <link rel="stylesheet" type="text/css" href="static/site.css" />
     <style type="text/css">
 body {
@@ -92,16 +92,16 @@ h3 {
             <div id="Nav">
                 <a href="static/news.html">News</a><a href="/pricing">Pricing</a><a href="static/documents/index.html">Documentation</a>
             </div>
-            <!-- {{#if Authentication.isLoggedIn}}
+            {{#if Authentication.isLoggedIn}}
                 <form id="Auth" action="/logout">
                     <span class="username">{{username}}</span>
                     <input type="submit" value="log out" />
                 </form>
-            {{else}} -->
+            {{else}}
                 <div id="Auth">
                     <a href="static/register.html">sign up</a><a href="static/login.html">log in</a>
                 </div>
-            <!-- {{/if}} -->
+            {{/if}}
         </div>
     </div>
     <div class="subheader">Do <span class="buzzword">realtime</span> and <span class="buzzword">peer-to-peer</span> <div class="chunk">the way you want it.</div></div>
