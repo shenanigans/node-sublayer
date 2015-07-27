@@ -163,8 +163,8 @@ sublayer.prototype.listen = function (port, adminPort, callback) {
                     }
                     self.DomainCollection = collection;
                     callback();
-                }
-            }),
+                });
+            },
             function (callback) {
                 Database.collection (self.config.userCollectionName, function (err, collection) {
                     if (err) {
