@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Sublayer.io</title>
+    <base href="../../../../" />
     <link rel="stylesheet" type="text/css" href="static/site.css" />
     <style type="text/css">
 body {
@@ -47,6 +48,41 @@ h3 {
     border-top: 1px solid #CEBECB;
     color: #2F2F2F;
 }
+
+#OpenSource {
+    margin: 5em -1em 0;
+    padding: 0 1em;
+    overflow: hidden;
+}
+
+#OpenSource h1 {
+    text-align: center;
+}
+
+#LogoRow {
+    text-align: center;
+    padding: 0.7em 0;
+    box-shadow: 0 0 1.5em #cacaca;
+    margin: 2.5em -1em;
+}
+
+#LogoRow img {
+    width: 20%;
+    margin: 0 4%;
+}
+
+.nixon {
+    display: inline-block;
+    margin: 0 1.2em 0.5em 0;
+    width: 35%;
+    float: left;
+}
+
+#OpenSource p {
+    width: 75%;
+    max-width: 720px;
+    margin: 3.3em auto 0;
+}
     </style>
 </head>
 <body>
@@ -56,16 +92,16 @@ h3 {
             <div id="Nav">
                 <a href="static/news.html">News</a><a href="/pricing">Pricing</a><a href="static/documents/index.html">Documentation</a>
             </div>
-            {{#if Authentication.isLoggedIn}}
+            <!-- {{#if Authentication.isLoggedIn}}
                 <form id="Auth" action="/logout">
                     <span class="username">{{username}}</span>
                     <input type="submit" value="log out" />
                 </form>
-            {{else}}
+            {{else}} -->
                 <div id="Auth">
                     <a href="static/register.html">sign up</a><a href="static/login.html">log in</a>
                 </div>
-            {{/if}}
+            <!-- {{/if}} -->
         </div>
     </div>
     <div class="subheader">Do <span class="buzzword">realtime</span> and <span class="buzzword">peer-to-peer</span> <div class="chunk">the way you want it.</div></div>
@@ -98,6 +134,16 @@ h3 {
             <h3>Deploy At Scale</h3>
             <p>We have only one speed - fast. Whether you're demonstrating a class project or deploying the future of telecommunications, the full capacity of our cluster is at your disposal. We always deliver the best speed we can provide and only charge for the resources you actually use.</p>
         </div>
+    </div>
+    <div id="OpenSource">
+        <h1>Built on Open Source</h1>
+        <div id="LogoRow">
+            <img src="static/nodejs_logo.jpg" /><img src="static/socketio_logo.jpg" /><img src="static/mongodb_logo.jpg" />
+        </div>
+        <p>
+            <img class="nixon" src="static/nixon.jpg" />
+            Open Source built the tools we love and use every day. To give back to the Open Source community, we release the source code of everything we develop under the MIT license. We believe that free collaboration with our peers is the best way to deliver a great product.
+        </p>
     </div>
     <div id="Footer">
 
