@@ -132,7 +132,7 @@ sublayer.prototype.listen = function (port, adminPort, callback) {
     this.adminRouter.addAction ('GET', new RegExp ('/account/(\\w+)$'), AccountActions.GET);
     this.adminRouter.addAction ('PUT', new RegExp ('/account/(\\w+)$'), AccountActions.PUT);
     this.adminRouter.addAction ('POST', 'account', AccountActions.POST);
-    this.adminRouter.addAction ('DELETE', new RegExp ('/session/(\\w+)$'), SessionActions.GET);
+    this.adminRouter.addAction ('DELETE', new RegExp ('/session/(\\w+)$'), SessionActions.DELETE);
     this.adminRouter.addAction ('POST', 'session', SessionActions.POST);
     this.adminRouter.addAction ('GET', undefined, RootActions.GET);
     this.adminRouter.addAction ('GET', new RegExp ('/domain/(\\w+)$'), DomainActions.GET);
@@ -164,7 +164,7 @@ sublayer.prototype.listen = function (port, adminPort, callback) {
                     self.DomainCollection = collection;
                     callback();
                 }
-            },
+            }),
             function (callback) {
                 Database.collection (self.config.userCollectionName, function (err, collection) {
                     if (err) {
