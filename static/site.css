@@ -58,7 +58,7 @@ h1, h2, h3, h4, h5 {
     background-color: #FF24DF;
     text-decoration: none;
     display: inline-block;
-    padding: 0.75em 0.6em 0.6em 0.6em;
+    padding: 0.75em 0.6em 0.65em 0.6em;
     transition: background-color 0.5s ease-out, color 0.5s ease-out;
     line-height: 1em;
 }
