@@ -6,16 +6,19 @@ html {
     background-attachment: fixed;
     background-position: 0% 25%;
     background-size: cover;
+    height: 100%;
 }
 
 body {
     max-width: 1024px;
     margin: auto;
-    padding: 2em 1em 0 1em;
+    padding: 4em 2em 8.5em;
     background-color: #fff;
     box-shadow: 0 0 3em #000000;
     overflow-y: scroll;
     font-size: 17px;
+    min-height: 90%;
+    position: relative;
 }
 
 h1, h2, h3, h4, h5 {
@@ -34,7 +37,7 @@ h1, h2, h3, h4, h5 {
 }
 
 #HeaderContent {
-    max-width: 995px;
+    max-width: 1024px;
     margin: auto;
     position: relative;
 }
@@ -63,9 +66,19 @@ h1, h2, h3, h4, h5 {
     line-height: 1em;
 }
 
+#Nav a.selected, #Auth a.selected {
+    cursor: default;
+    background-color: #FF68E9;
+}
+
 #Nav a:hover, #Auth a:hover {
     color: #FF24DF;
     background-color: #fff;
+}
+
+#Nav a.selected:hover, #Auth a.selected:hover {
+    background-color: #FF68E9;
+    color: #fff;
 }
 
 #Auth {
@@ -78,5 +91,27 @@ h1, h2, h3, h4, h5 {
 #Footer {
     height: 3em;
     background-color: #FDBBF4;
-    margin: 5em -1em 0 -1em;
+    margin: 5em -2em 0;
+    position: absolute;
+    right: 2em;
+    bottom: 0;
+    left: 2em;
+}
+
+.boon {
+    background-color: #C6FB95;
+    color: #44820A;
+    border: 0.1em solid #A4DA71;
+    border-right: none;
+    border-left: none;
+    text-align: center;
+    padding: 1em;
+    font-size: 130%;
+    margin: 1em -1.5em 0.5em;
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+.boon.visible {
+    opacity: 1;
 }

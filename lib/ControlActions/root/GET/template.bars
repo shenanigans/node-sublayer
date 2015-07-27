@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>Sublayer.io</title>
-    <!-- <base href="../../../../" /> -->
     <link rel="stylesheet" type="text/css" href="static/site.css" />
     <style type="text/css">
 body {
@@ -50,8 +49,8 @@ h3 {
 }
 
 #OpenSource {
-    margin: 5em -1em 0;
-    padding: 0 1em;
+    margin: 5em -2em 0;
+    padding: 0 2em;
     overflow: hidden;
 }
 
@@ -63,7 +62,7 @@ h3 {
     text-align: center;
     padding: 0.7em 0;
     box-shadow: 0 0 1.5em #cacaca;
-    margin: 2.5em -1em;
+    margin: 2.5em -2em;
 }
 
 #LogoRow img {
@@ -73,15 +72,16 @@ h3 {
 
 .nixon {
     display: inline-block;
-    margin: 0 1.2em 0.5em 0;
+    margin: -1em 1.2em 0.5em 0;
     width: 35%;
+    min-width: 10em;
     float: left;
 }
 
 #OpenSource p {
     width: 75%;
     max-width: 720px;
-    margin: 3.3em auto 0;
+    margin: 4.3em auto 0;
 }
     </style>
 </head>
@@ -93,7 +93,7 @@ h3 {
                 <a href="static/news.html">News</a><a href="/pricing">Pricing</a><a href="static/documents/index.html">Documentation</a>
             </div>
             {{#if Authentication.isLoggedIn}}
-                <form id="Auth" action="/logout">
+                <form id="Auth" action="/session" method="DELETE">
                     <span class="username">{{username}}</span>
                     <input type="submit" value="log out" />
                 </form>

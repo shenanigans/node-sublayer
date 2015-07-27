@@ -25,12 +25,40 @@ input[type="submit"] {
 
 #Recovery {
     text-align: center;
+    margin-top: 2em;
 }
 
 #Recovery a {
     color: #7B7BFF;
 }
     </style>
+    <script type="text/javascript">
+        window.onload = function(){
+            var getStr = window.location.search;
+            if (!getStr) return;
+            getStr = getStr.slice (1);
+            var getList = getStr
+             .split ('&')
+             .map (function (item) { return item.split ('='); })
+             ;
+            var get = {};
+            for (var i=0,j=getList.length; i<j; i++)
+                get[decodeURIComponent (getList[i][0])] = decodeURIComponent (getList[i][1]);
+            if (!get.confirmed)
+                return;
+
+            // create the confirmation message element
+            var msgElem = window.document.createElement ('div');
+            msgElem.className = 'boon';
+            msgElem.appendChild (window.document.createTextNode (
+                "Your account has been confirmed! You may now log in whenever you're ready."
+            ));
+            window.document.body.insertBefore (msgElem, window.document.body.firstChild);
+            setTimeout (function(){
+                msgElem.className = 'boon visible';
+            }, 300);
+        };
+    </script>
 </head>
 <body>
     <div id="Header">
@@ -40,7 +68,7 @@ input[type="submit"] {
                 <a href="news.html">News</a><a href="/pricing">Pricing</a><a href="static/documents/index.html">Documentation</a>
             </div>
             <div id="Auth">
-                <a href="register.html">sign up</a>
+                <a href="register.html">sign up</a><a class="selected">log in</a>
             </div>
         </div>
     </div>

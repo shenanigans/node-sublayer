@@ -30,16 +30,23 @@ input[type="submit"] {
     transition: background-color 0.5s ease-out, color 0.5s ease-out;
 }
 
-input[type="submit"]:focus {
+input[type="submit"]:disabled {
+    background-color: #E4E4E4;
+    color: #6B6B6B;
+    cursor: default;
+}
+
+input[type="submit"]:focus, input[type="submit"]:hover {
     outline: 1px solid #FF24DF;
     background-color: #fff;
     color: #FF24DF;
 }
 
-input[type="submit"]:hover {
-    color: #FF24DF;
-    outline: 1px solid #FF24DF;
-    background-color: #fff;
+input[type="submit"]:disabled:hover, input[type="submit"]:disabled:focus {
+    background-color: #E4E4E4;
+    color: #6B6B6B;
+    cursor: default;
+    outline: none;
 }
 
 .bees {

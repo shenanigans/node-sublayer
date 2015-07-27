@@ -34,14 +34,16 @@ var ConfirmActions  = require ('./lib/ControlActions/confirm');
     Default configuration options used for all Actions.
 */
 var DEFAULT_CONFIG = {
-    databaseName:           "sublayer",
-    applicationName:        "sublayer",
-    domainCollectionName:   "Domain",
-    userCollectionName:     "User",
-    usernameCollectionName: "Username",
-    actionDefaults:         {},
-    domainCacheLength:      2048,
-    domainCacheTimout:      1000 * 60
+    databaseName:               "sublayer",
+    applicationName:            "sublayer",
+    domainCollectionName:       "Domain",
+    userCollectionName:         "User",
+    usernameCollectionName:     "Username",
+    clientCollectionName:       "Client",
+    confirmationCollectionName: "Confirm",
+    actionDefaults:             {},
+    domainCacheLength:          2048,
+    domainCacheTimout:          1000 * 60
 };
 
 
@@ -129,20 +131,20 @@ sublayer.prototype.listen = function (port, adminPort, callback) {
     this.adminRouter.addAction ('POST', 'event', PostEvent);
     this.adminRouter.addAction ('GET', 'config', GetConfig);
     this.adminRouter.addAction ('PUT', 'config', PutConfig);
-    this.adminRouter.addAction ('GET', new RegExp ('/account/(\\w+)$'), AccountActions.GET);
-    this.adminRouter.addAction ('PUT', new RegExp ('/account/(\\w+)$'), AccountActions.PUT);
+    this.adminRouter.addAction ('GET', new RegExp ('/account/([\\w\\-_]+)$'), AccountActions.GET);
+    this.adminRouter.addAction ('PUT', new RegExp ('/account/([\\w\\-_]+)$'), AccountActions.PUT);
     this.adminRouter.addAction ('POST', 'account', AccountActions.POST);
-    this.adminRouter.addAction ('DELETE', new RegExp ('/session/(\\w+)$'), SessionActions.DELETE);
+    this.adminRouter.addAction ('DELETE', new RegExp ('/session/([\\w\\-_]+)$'), SessionActions.DELETE);
     this.adminRouter.addAction ('POST', 'session', SessionActions.POST);
+    this.adminRouter.addAction ('GET', new RegExp ('/domain/([\\w\\-_]+)$'), DomainActions.GET);
+    this.adminRouter.addAction ('PUT', new RegExp ('/domain/([\\w\\-_]+)$'), DomainActions.PUT);
+    this.adminRouter.addAction ('POST', 'domain', DomainActions.POST);
+    this.adminRouter.addAction ('GET', new RegExp ('/permit/([\\w\\-_]+)$'), PermitActions.GET);
+    this.adminRouter.addAction ('POST', new RegExp ('/permit/([\\w\\-_]+)$'), PermitActions.POST);
+    this.adminRouter.addAction ('DELETE', new RegExp ('/permit/([\\w\\-_]+)/([\\w\\-_]+)$'), PermitActions.DELETE);
+    this.adminRouter.addAction ('GET', new RegExp ('/confirm/([\\w\\-_]+)$'), ConfirmActions.GET);
     this.adminRouter.addAction ('GET', undefined, RootActions.GET);
-    this.adminRouter.addAction ('GET', new RegExp ('/domain/(\\w+)$'), DomainActions.GET);
-    this.adminRouter.addAction ('PUT', new RegExp ('/domain/(\\w+)$'), DomainActions.PUT);
-    this.adminRouter.addAction ('POST', 'domain', DomainActions.POST);
-    this.adminRouter.addAction ('GET', new RegExp ('/permit/(\\w+)$'), PermitActions.GET);
-    this.adminRouter.addAction ('POST', new RegExp ('/permit/(\\w+)$'), PermitActions.POST);
-    this.adminRouter.addAction ('DELETE', new RegExp ('/permit/(\\w+)/(\\w+)$'), PermitActions.DELETE);
-    this.adminRouter.addAction ('GET', new RegExp ('/confirm/(\\w+)$'), ConfirmActions.GET);
-    this.adminRouter.addAction ('POST', 'domain', DomainActions.POST);
+    // this.adminRouter.addAction ('POST', 'domain', DomainActions.POST);
 
     var Database = new MongoDB.Db (
         this.config.databaseName,
@@ -182,6 +184,26 @@ sublayer.prototype.listen = function (port, adminPort, callback) {
                         return process.exit (1);
                     }
                     self.UsernameCollection = collection;
+                    callback();
+                });
+            },
+            function (callback) {
+                Database.collection (self.config.clientCollectionName, function (err, collection) {
+                    if (err) {
+                        self.logger.fatal (err);
+                        return process.exit (1);
+                    }
+                    self.ClientCollection = collection;
+                    callback();
+                });
+            },
+            function (callback) {
+                Database.collection (self.config.confirmationCollectionName, function (err, collection) {
+                    if (err) {
+                        self.logger.fatal (err);
+                        return process.exit (1);
+                    }
+                    self.ConfirmationCollection = collection;
                     callback();
                 });
             }

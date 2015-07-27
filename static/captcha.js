@@ -5,6 +5,7 @@ function createCheckbox(){
     labelElem.appendChild (window.document.createTextNode ('I am not a robot'));
     var inputElem = window.document.createElement ('input');
     inputElem.setAttribute ('id', 'RobotCheck');
+    inputElem.setAttribute ('name', 'wasps');
     inputElem.setAttribute ('type', 'checkbox');
 
     var frag = window.document.createDocumentFragment();

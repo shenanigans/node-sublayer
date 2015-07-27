@@ -6,12 +6,49 @@
     <link rel="stylesheet" type="text/css" href="forms.css" />
     <script type="text/javascript" src="captcha.js"></script>
     <script type="text/javascript">
-        window.onload = createCheckbox;
+        function isEmail (str) {
+            return true;
+        }
+        window.onload = function(){
+            createCheckbox();
+            var nameInput = window.document.getElementById ('Username');
+            var emailInput = window.document.getElementById ('Email');
+            var passInput = window.document.getElementById ('Password');
+            var confirmInput = window.document.getElementById ('ConfirmPassword');
+            var notRobotInput = window.document.getElementById ('RobotCheck');
+            var submitButton = window.document.getElementById ('RegisterButton');
+
+            function checkForm(){
+                console.log ('checking');
+                if (
+                    nameInput.value.length >= 3
+                 && nameInput.value.length <= 32
+                 && isEmail (emailInput)
+                 && passInput.value.length >= 7
+                 && passInput.value.length <= 255
+                 && confirmInput.value == passInput.value
+                 && notRobotInput.checked
+                )
+                    submitButton.removeAttribute ('disabled');
+                else
+                    submitButton.setAttribute ('disabled', 'true');
+            }
+
+            nameInput.onchange = checkForm;
+            emailInput.onchange = checkForm;
+            passInput.onchange = checkForm;
+            confirmInput.onchange = checkForm;
+            notRobotInput.onchange = checkForm;
+        };
     </script>
     <style type="text/css">
 #RegisterForm {
     text-align: center;
     margin-top: 2.5em;
+}
+
+#CAPTCHA {
+    margin-top: 1em;
 }
 
 label {
@@ -31,32 +68,32 @@ input[type="submit"] {
                 <a href="news.html">News</a><a href="/pricing">Pricing</a><a href="static/documents/index.html">Documentation</a>
             </div>
             <div id="Auth">
-                <a href="login.html">log in</a>
+                <a class="selected">sign up</a><a href="login.html">log in</a>
             </div>
         </div>
     </div>
-    <form id="RegisterForm">
+    <form id="RegisterForm" action="/account" method="POST">
         <h1>Create an Account</h1>
         <label for="Username">username</label>
-        <input id="Username" type="text" />
+        <input id="Username" type="text" name="username" />
         <br />
         <label for="Email">email address</label>
-        <input id="Email" type="text" />
+        <input id="Email" type="text" name="email" />
         <br />
         <label for="Password">password</label>
-        <input id="Password" type="password" />
+        <input id="Password" type="password" name="password" />
         <br />
         <label for="ConfirmPassword">confirm password</label>
-        <input id="ConfirmPassword" type="password" />
+        <input id="ConfirmPassword" type="password" name="confirm" />
         <br />
         <input id="Homepage" class="bees" name="homepage" />
         <div id="CAPTCHA">
             <noscript>
                 <h3 class="error">Scripts Disabled</h3>
-                <p>Javascript must be enabled to register or log in to this site.</p>
+                <p>Javascript must be enabled to register for this site.</p>
             </noscript>
         </div>
-        <input type="submit" value="Register" disabled />
+        <input id="RegisterButton" type="submit" value="Register" disabled />
     </form>
     <div id="Footer">
 
