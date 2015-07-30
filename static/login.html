@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Sublayer.io Registration</title>
+    <title>Sublayer.io Log In</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="site.css" />
     <link rel="stylesheet" type="text/css" href="forms.css" />
     <style type="text/css">
@@ -34,29 +35,55 @@ input[type="submit"] {
     </style>
     <script type="text/javascript">
         window.onload = function(){
-            var getStr = window.location.search;
-            if (!getStr) return;
-            getStr = getStr.slice (1);
-            var getList = getStr
-             .split ('&')
-             .map (function (item) { return item.split ('='); })
-             ;
+            // load GET params from the location
             var get = {};
-            for (var i=0,j=getList.length; i<j; i++)
-                get[decodeURIComponent (getList[i][0])] = decodeURIComponent (getList[i][1]);
-            if (!get.confirmed)
-                return;
+            var getStr = window.location.search;
+            if (getStr) {
+                getStr = getStr.slice (1);
+                var getList = getStr
+                 .split ('&')
+                 .map (function (item) { return item.split ('='); })
+                 ;
+                for (var i=0,j=getList.length; i<j; i++)
+                    get[decodeURIComponent (getList[i][0])] = decodeURIComponent (getList[i][1]);
+            }
 
-            // create the confirmation message element
-            var msgElem = window.document.createElement ('div');
-            msgElem.className = 'boon';
-            msgElem.appendChild (window.document.createTextNode (
-                "Your account has been confirmed! You may now log in whenever you're ready."
-            ));
-            window.document.body.insertBefore (msgElem, window.document.body.firstChild);
-            setTimeout (function(){
-                msgElem.className = 'boon visible';
-            }, 300);
+
+            // display the confirmation message
+            if (get.confirmed) {
+                var msgElem = window.document.createElement ('div');
+                msgElem.className = 'boon';
+                msgElem.appendChild (window.document.createTextNode (
+                    "Your account has been confirmed! You may now log in whenever you're ready."
+                ));
+                window.document.body.insertBefore (msgElem, window.document.body.firstChild);
+                setTimeout (function(){
+                    msgElem.className = 'boon visible';
+                }, 300);
+            }
+
+
+            // form validation
+            var nameInput = window.document.getElementById ('Username');
+            var passInput = window.document.getElementById ('Password');
+            var submitButton = window.document.getElementById ('LoginButton');
+
+            function checkForm(){
+                if (
+                    nameInput.value.length >= 3
+                 && nameInput.value.length <= 32
+                 && passInput.value.length >= 3
+                 && passInput.value.length <= 255
+                )
+                    submitButton.removeAttribute ('disabled');
+                else
+                    submitButton.setAttribute ('disabled', 'true');
+            }
+
+            nameInput.onchange = checkForm;
+            nameInput.onkeyup = checkForm;
+            passInput.onchange = checkForm;
+            passInput.onkeyup = checkForm;
         };
     </script>
 </head>
@@ -65,22 +92,25 @@ input[type="submit"] {
         <div id="HeaderContent">
             <a id="Hero" href="/">Sublayer.io</a>
             <div id="Nav">
-                <a href="news.html">News</a><a href="/pricing">Pricing</a><a href="static/documents/index.html">Documentation</a>
+                <a href="news.html">News</a><a href="pricing.html">Pricing</a><a href="static/documents/index.html">Documentation</a>
             </div>
             <div id="Auth">
                 <a href="register.html">sign up</a><a class="selected">log in</a>
             </div>
         </div>
     </div>
-    <form id="LoginForm">
+    <form id="LoginForm" action="/session" method="POST">
         <h1>Log In</h1>
         <label for="Username">username</label>
-        <input id="Username" type="text"></input>
+        <input id="Username" type="text" name="username" />
         <br />
         <label for="Password">password</label>
-        <input id="Password" type="password"></input>
+        <input id="Password" type="password" name="password" />
         <br />
-        <input type="submit" value="Log In" />
+        <label for="RememberMe">remember me</label>
+        <input id="RememberMe" type="checkbox" name="rememberMe" />
+        <br />
+        <input id="LoginButton" type="submit" value="Log In" disabled />
     </form>
     <div id="Recovery">
         <a href="recovery.html">I forgot my username or password</a>

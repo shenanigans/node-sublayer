@@ -36,6 +36,12 @@ h1, h2, h3, h4, h5 {
     box-shadow: 0 0 1.5em rgba(0, 0, 0, 0.71);
 }
 
+#Header img {
+    height: 1.2em;
+
+    margin: -0.2em 0.3em -0.2em 0;
+}
+
 #HeaderContent {
     max-width: 1024px;
     margin: auto;
@@ -56,7 +62,7 @@ h1, h2, h3, h4, h5 {
     position: absolute;
 }
 
-#Nav a, #Auth a {
+#Nav a, #Auth input[type="submit"], #Auth a {
     color: #fff;
     background-color: #FF24DF;
     text-decoration: none;
@@ -64,6 +70,10 @@ h1, h2, h3, h4, h5 {
     padding: 0.75em 0.6em 0.65em 0.6em;
     transition: background-color 0.5s ease-out, color 0.5s ease-out;
     line-height: 1em;
+    border: none;
+    font-size: 100%;
+    cursor: pointer;
+    vertical-align: top;
 }
 
 #Nav a.selected, #Auth a.selected {
@@ -71,7 +81,7 @@ h1, h2, h3, h4, h5 {
     background-color: #FF68E9;
 }
 
-#Nav a:hover, #Auth a:hover {
+#Nav a:hover, #Auth input[type="submit"]:hover, #Auth a:hover {
     color: #FF24DF;
     background-color: #fff;
 }

@@ -10,6 +10,7 @@ var filth        = require ('filth');
 var cachew       = require ('cachew');
 var Gateway      = require ('./lib/Gateway');
 var Action       = require ('./lib/Action');
+var Exacter      = require ('./lib/Exacter');
 
 var GetSession   = require ('./lib/ControlActions/GetSession');
 var PostSession  = require ('./lib/ControlActions/PostSession');
@@ -69,6 +70,7 @@ function sublayer (config) {
     this.logger = this.server.logger;
     this.gateway = new Gateway (this, this.config, this.server);
     this.adminRouter = new substation.Router (this, this.config);
+    this.exacter = new Exacter (this, this.config);
 }
 module.exports = sublayer;
 
@@ -134,8 +136,10 @@ sublayer.prototype.listen = function (port, adminPort, callback) {
     this.adminRouter.addAction ('GET', new RegExp ('/account/([\\w\\-_]+)$'), AccountActions.GET);
     this.adminRouter.addAction ('PUT', new RegExp ('/account/([\\w\\-_]+)$'), AccountActions.PUT);
     this.adminRouter.addAction ('POST', 'account', AccountActions.POST);
-    this.adminRouter.addAction ('DELETE', new RegExp ('/session/([\\w\\-_]+)$'), SessionActions.DELETE);
     this.adminRouter.addAction ('POST', 'session', SessionActions.POST);
+    this.adminRouter.addAction ('DELETE', 'session', SessionActions.DELETE);
+     // we can't DELETE from a form, so let's make an RPC-style handler as well
+    this.adminRouter.addAction ('GET', 'logout', SessionActions.DELETE);
     this.adminRouter.addAction ('GET', new RegExp ('/domain/([\\w\\-_]+)$'), DomainActions.GET);
     this.adminRouter.addAction ('PUT', new RegExp ('/domain/([\\w\\-_]+)$'), DomainActions.PUT);
     this.adminRouter.addAction ('POST', 'domain', DomainActions.POST);
@@ -144,7 +148,6 @@ sublayer.prototype.listen = function (port, adminPort, callback) {
     this.adminRouter.addAction ('DELETE', new RegExp ('/permit/([\\w\\-_]+)/([\\w\\-_]+)$'), PermitActions.DELETE);
     this.adminRouter.addAction ('GET', new RegExp ('/confirm/([\\w\\-_]+)$'), ConfirmActions.GET);
     this.adminRouter.addAction ('GET', undefined, RootActions.GET);
-    // this.adminRouter.addAction ('POST', 'domain', DomainActions.POST);
 
     var Database = new MongoDB.Db (
         this.config.databaseName,

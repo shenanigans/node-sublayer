@@ -1,88 +1,160 @@
 <!DOCTYPE html>
 <html>
 <head>
+    {{#if Authentication.isLoggedIn}}
+    <script type="text/javascript">
+        if (!window.location.hash)
+            window.location.hash = '#Notifications';
+    </script>
+    {{/if}}
     <title>Sublayer.io</title>
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    <link rel="shortdut icon" href="static/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="static/site.css" />
     <style type="text/css">
-body {
-    margin-top: 30em;
-    padding-top: 1.75em;
-}
+{{#if Authentication.isLoggedIn}}
+    #TabRow {
+        text-align: center;
+        margin-top: -12em;
+    }
 
-.subheader {
-    font-size: 210%;
-    margin: 0 0 1.3em 0;
-    text-align: center;
-}
+    .tab {
+        font-size: 120%;
+        padding: 0.7em;
+        width: 10%;
+        transition: background-color 0.5s ease-out, color 0.5s ease-out;
+        cursor: pointer;
+        color: #666;
+        text-decoration: none;
+    }
 
-.chunk {
-    display: inline-block;
-}
+    .tab:hover {
+        background-color: #FFB9F4;
+        color: #6F3766;
+    }
 
-.buzzword {
-    color: #FF24DF;
-}
+    .page:target .tab {
+        cursor: default;
+        background-color: #FF24DF;
+        color: #fff;
+    }
 
-h3 {
-    margin: 0 0 0.4em 0;
-}
+    .page {
+        display: inline-block;
+        width: 24%;
+        padding-top: 14em;
+    }
 
-#Features {
-    text-align: center;
-}
+    .page .content {
+        padding: 2em 0;
+        min-height: 4em;
+        display: none;
+        position: absolute;
+        right: 2em;
+        left: 2em;
+        text-align: left;
+    }
 
-.feature {
-    display: inline-block;
-    text-align: left;
-    width: 16em;
-    height: 12em;
-    margin: 0 1em 2em 1em;
-    vertical-align: top;
-    line-height: 1.25em;
-}
+    .page:target .content {
+        display: block;
+    }
 
-.feature p {
-    margin: 0;
-    padding: 0.3em;
-    border-top: 1px solid #CEBECB;
-    color: #2F2F2F;
-}
+    table {
+        width: 100%;
+    }
 
-#OpenSource {
-    margin: 5em -2em 0;
-    padding: 0 2em;
-    overflow: hidden;
-}
+    #NotificationTable {
 
-#OpenSource h1 {
-    text-align: center;
-}
+    }
 
-#LogoRow {
-    text-align: center;
-    padding: 0.7em 0;
-    box-shadow: 0 0 1.5em #cacaca;
-    margin: 2.5em -2em;
-}
+    #InvoiceTable {
 
-#LogoRow img {
-    width: 20%;
-    margin: 0 4%;
-}
+    }
 
-.nixon {
-    display: inline-block;
-    margin: -1em 1.2em 0.5em 0;
-    width: 35%;
-    min-width: 10em;
-    float: left;
-}
+    #DomainTable {
 
-#OpenSource p {
-    width: 75%;
-    max-width: 720px;
-    margin: 4.3em auto 0;
-}
+    }
+{{else}}
+    body {
+        margin-top: 30em;
+        padding-top: 1.75em;
+    }
+
+    .subheader {
+        font-size: 210%;
+        margin: 0 0 1.3em 0;
+        text-align: center;
+    }
+
+    .chunk {
+        display: inline-block;
+    }
+
+    .buzzword {
+        color: #FF24DF;
+    }
+
+    h3 {
+        margin: 0 0 0.4em 0;
+    }
+
+    #Features {
+        text-align: center;
+    }
+
+    .feature {
+        display: inline-block;
+        text-align: left;
+        width: 16em;
+        height: 12em;
+        margin: 0 1em 2em 1em;
+        vertical-align: top;
+        line-height: 1.25em;
+    }
+
+    .feature p {
+        margin: 0;
+        padding: 0.3em;
+        border-top: 1px solid #CEBECB;
+        color: #2F2F2F;
+    }
+
+    #OpenSource {
+        margin: 5em -2em 0;
+        padding: 0 2em;
+        overflow: hidden;
+    }
+
+    #OpenSource h1 {
+        text-align: center;
+    }
+
+    #LogoRow {
+        text-align: center;
+        padding: 0.7em 0;
+        box-shadow: 0 0 1.5em #cacaca;
+        margin: 2.5em -2em;
+    }
+
+    #LogoRow img {
+        width: 20%;
+        margin: 0 4%;
+    }
+
+    .nixon {
+        display: inline-block;
+        margin: -1em 1.2em 0.5em 0;
+        width: 35%;
+        min-width: 10em;
+        float: left;
+    }
+
+    #OpenSource p {
+        width: 75%;
+        max-width: 720px;
+        margin: 4.3em auto 0;
+    }
+{{/if}}
     </style>
 </head>
 <body>
@@ -90,11 +162,11 @@ h3 {
         <div id="HeaderContent">
             <a id="Hero" href="/">Sublayer.io</a>
             <div id="Nav">
-                <a href="static/news.html">News</a><a href="/pricing">Pricing</a><a href="static/documents/index.html">Documentation</a>
+                <a href="static/news.html">News</a><a href="static/pricing.html">Pricing</a><a href="static/documents/index.html">Documentation</a>
             </div>
             {{#if Authentication.isLoggedIn}}
-                <form id="Auth" action="/session" method="DELETE">
-                    <span class="username">{{username}}</span>
+                <form id="Auth" action="/logout" method="GET">
+                    <a href="settings"><img src="static/gear.png" /></a>
                     <input type="submit" value="log out" />
                 </form>
             {{else}}
@@ -104,47 +176,118 @@ h3 {
             {{/if}}
         </div>
     </div>
-    <div class="subheader">Do <span class="buzzword">realtime</span> and <span class="buzzword">peer-to-peer</span> <div class="chunk">the way you want it.</div></div>
-    <div id="Features">
-        <div id="Session Management" class="feature">
-            <h3>Session Management</h3>
-            <p>Sublayer manages client cookies, tracks session status and performs all the other management work that comes with having user accounts. You define what it means to be a User, we tell you which Users are accessing your app.</p>
+    {{#if Authentication.isLoggedIn}}
+        <h1>Control Panel</h1>
+        <div id="TabRow">
+            <div class="page" id="Notifications">
+                <a href="#Notifications" class="tab" id="NotificationsTab">Notifications</a>
+                <div class="content">
+                    <table id="NotificationTable">
+                        <tr class="tablehead">
+                            <th><input type="checkbox" id="SelectAll" /></th>
+                            <th>Sender</th>
+                            <th>Subject</th>
+                            <th>Sent</th>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" /></td>
+                            <td>Sublayer.io Support</td>
+                            <td><a href="notification/890adsj8ai90sdfasd">Welcome to Sublayer.io!</a></td>
+                            <td>06/28/2015</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="page" id="Invoices">
+                <a href="#Invoices" class="tab" id="InvoicesTab">Invoices</a>
+                <div class="content">
+                    <table id="InvoiceTable">
+                        <tr class="tablehead">
+                            <th>Invoice #</th>
+                            <th>Domain</th>
+                            <th>Date</th>
+                            <th>Due Date</th>
+                            <th>Total</th>
+                            <th>Paid</th>
+                        </tr>
+                        <tr>
+                            <td><a href="invoice/578902">578902</a></td>
+                            <td><a href="domain/ugf89a0sdfp098usd">Sublayer.io</a></td>
+                            <td>April 1st, 2015</td>
+                            <td>04/14/2015</td>
+                            <td>$54.70</td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="page" id="Domains">
+                <a href="#Domains" class="tab" id="DomainsTab">Domains</a>
+                <div class="content">
+                    <table id="DomainTable">
+                        <tr class="tablehead">
+                            <th>Domain</th>
+                            <th>Status</th>
+                            <th>Permissions</th>
+                        </tr>
+                        <tr>
+                            <td><a href="/domain/vu890qawer7yu89asdf">Sublayer.io</a></td>
+                            <td class="good">Online</td>
+                            <td>Owner</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="page" id="Contacts">
+                <a href="#Contacts" class="tab" id="ContactsTab">Contacts</a>
+                <div class="content">
+
+                </div>
+            </div>
         </div>
-        <div id="Device Access" class="feature">
-            <h3>Device Access</h3>
-            <p>Sometimes it's not enough to know who is using your app - sometimes you need to know <i>how</i>. Sublayer tracks the individual client devices used to access your app and routes realtime events directly to them.</p>
+    {{else}}
+        <div class="subheader">Do <span class="buzzword">realtime</span> and <span class="buzzword">peer-to-peer</span> <div class="chunk">the easy way.</div></div>
+        <div id="Features">
+            <div id="Session Management" class="feature">
+                <h3>Session Management</h3>
+                <p>Sublayer manages client cookies, tracks session status and performs all the other management work that comes with having user accounts. You define what it means to be a User, we tell you which Users are accessing your app.</p>
+            </div>
+            <div id="Device Access" class="feature">
+                <h3>Device Access</h3>
+                <p>Sometimes it's not enough to know who is using your app - sometimes you need to know <i>how</i>. Sublayer tracks the individual client devices used to access your app and routes realtime events directly to them.</p>
+            </div>
+            <div id="Realtime" class="feature">
+                <h3>Real Time Events</h3>
+                <p>To make it easier to leverage the power of Socket.io, Sublayer routes events directly to your Users without requiring them to "subscribe" or "join" anything in advance.</p>
+            </div>
+            <div id="PeerToPeer" class="feature">
+                <h3>Easy Peer To Peer</h3>
+                <p>WebRTC is a very powerful tool but not so easy to implement in a real application. Sublayer makes WebRTC easy with a fast signaling server and client tools that take all the pain out of connection negotiation and multimedia streaming.</p>
+            </div>
+            <!-- <div id="Caching" class="feature">
+                <h3>Intelligent API Cache</h3>
+                <p>Serving content from a cache is a good idea, but most caches are limited to static public content. Sublayer can improve cache performance by repeating dynamic requests for logged in users or even individual devices.</p>
+            </div> -->
+            <div id="Request Safety" class="feature">
+                <h3>Request Safety</h3>
+                <p>By routing requests early and validating query and body content with JSON Schema on the server side, Sublayer helps ensure that no confusing or hostile requests even reach your app servers.</p>
+            </div>
+            <div id="Scaling" class="feature">
+                <h3>Deploy At Scale</h3>
+                <p>We have only one speed - fast. Whether you're demonstrating a class project or deploying the future of telecommunications, the full capacity of our cluster is at your disposal. We always deliver the best speed we can provide and only charge for the resources you actually use.</p>
+            </div>
         </div>
-        <div id="Realtime" class="feature">
-            <h3>Real Time Events</h3>
-            <p>To make it easier to leverage the power of Socket.io, Sublayer routes events directly to your Users without requiring them to "subscribe" or "join" anything in advance.</p>
+        <div id="OpenSource">
+            <h1>Built on Open Source</h1>
+            <div id="LogoRow">
+                <img src="static/nodejs_logo.jpg" /><img src="static/socketio_logo.jpg" /><img src="static/mongodb_logo.jpg" />
+            </div>
+            <p>
+                <img class="nixon" src="static/nixon.jpg" />
+                Open Source built the tools we love and use every day. To give back to the Open Source community, we release the source code of everything we develop under the MIT license. We believe that free collaboration with our peers is the best way to deliver a great product.
+            </p>
         </div>
-        <div id="PeerToPeer" class="feature">
-            <h3>Easy Peer To Peer</h3>
-            <p>WebRTC is a very powerful tool but not so easy to implement in a real application. Sublayer makes WebRTC easy with a fast signaling server and client tools that take all the pain out of connection negotiation and multimedia streaming.</p>
-        </div>
-        <!-- <div id="Caching" class="feature">
-            <h3>Intelligent API Cache</h3>
-            <p>Serving content from a cache is a good idea, but most caches are limited to static public content. Sublayer can improve cache performance by repeating dynamic requests for logged in users or even individual devices.</p>
-        </div> -->
-        <div id="Request Safety" class="feature">
-            <h3>Request Safety</h3>
-            <p>By routing requests early and validating query and body content with JSON Schema on the server side, Sublayer helps ensure that no confusing or hostile requests even reach your app servers.</p>
-        </div>
-        <div id="Scaling" class="feature">
-            <h3>Deploy At Scale</h3>
-            <p>We have only one speed - fast. Whether you're demonstrating a class project or deploying the future of telecommunications, the full capacity of our cluster is at your disposal. We always deliver the best speed we can provide and only charge for the resources you actually use.</p>
-        </div>
-    </div>
-    <div id="OpenSource">
-        <h1>Built on Open Source</h1>
-        <div id="LogoRow">
-            <img src="static/nodejs_logo.jpg" /><img src="static/socketio_logo.jpg" /><img src="static/mongodb_logo.jpg" />
-        </div>
-        <p>
-            <img class="nixon" src="static/nixon.jpg" />
-            Open Source built the tools we love and use every day. To give back to the Open Source community, we release the source code of everything we develop under the MIT license. We believe that free collaboration with our peers is the best way to deliver a great product.
-        </p>
-    </div>
+    {{/if}}
     <div id="Footer">
 
     </div>
