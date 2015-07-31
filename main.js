@@ -43,7 +43,7 @@ var DEFAULT_CONFIG = {
     clientCollectionName:       "Client",
     confirmationCollectionName: "Confirm",
     notificationCollectionName: "Notice",
-    invoicesCollectionName:     "Invoice",
+    invoiceCollectionName:      "Invoice",
     actionDefaults:             {},
     domainCacheLength:          2048,
     domainCacheTimout:          1000 * 60
