@@ -39,7 +39,7 @@ h1, h2, h3, h4, h5 {
 #Header img {
     height: 1.2em;
 
-    margin: -0.2em 0.3em -0.2em 0;
+    margin: -0.2em 0;
 }
 
 #HeaderContent {
@@ -74,6 +74,12 @@ h1, h2, h3, h4, h5 {
     font-size: 100%;
     cursor: pointer;
     vertical-align: top;
+}
+
+@-moz-document url-prefix() {
+    #Auth input[type="submit"] {
+        padding-top: 0.65em;
+    }
 }
 
 #Nav a.selected, #Auth a.selected {

@@ -6,11 +6,13 @@
         if (!window.location.hash)
             window.location.hash = '#Notifications';
     </script>
+    <script type="text/javascript" src="static/ControlPanel.js"></script>
     {{/if}}
     <title>Sublayer.io</title>
     <link rel="icon" href="static/favicon.ico" type="image/x-icon">
     <link rel="shortdut icon" href="static/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="static/site.css" />
+    <link rel="stylesheet" type="text/css" href="static/forms.css" />
     <style type="text/css">
 {{#if Authentication.isLoggedIn}}
     #TabRow {
@@ -59,20 +61,34 @@
         display: block;
     }
 
+    .tablecloth {
+        min-height: 10em;
+        border: 0.1em solid #FF24DF;
+        border-radius: 1px;
+        margin-bottom: 1em;
+    }
+
     table {
         width: 100%;
+        border-collapse: collapse;
     }
 
-    #NotificationTable {
-
+    thead {
+        border-bottom: 0.1em solid #FF24DF;
     }
 
-    #InvoiceTable {
-
+    th {
+        background-color: #FFC8F7;
+        padding: 0.5em 0.5em 0.2em;
+        font-weight: 300;
     }
 
-    #DomainTable {
+    td {
+        padding: 0.3em 0.5em;
+    }
 
+    tr:nth-child(even) {
+        background-color: #D4EFFF;
     }
 {{else}}
     body {
@@ -166,8 +182,7 @@
             </div>
             {{#if Authentication.isLoggedIn}}
                 <form id="Auth" action="/logout" method="GET">
-                    <a href="settings"><img src="static/gear.png" /></a>
-                    <input type="submit" value="log out" />
+                    <a href="settings"><img src="static/gear.png" /></a><input type="submit" value="log out" />
                 </form>
             {{else}}
                 <div id="Auth">
@@ -182,60 +197,62 @@
             <div class="page" id="Notifications">
                 <a href="#Notifications" class="tab" id="NotificationsTab">Notifications</a>
                 <div class="content">
-                    <table id="NotificationTable">
-                        <tr class="tablehead">
-                            <th><input type="checkbox" id="SelectAll" /></th>
-                            <th>Sender</th>
-                            <th>Subject</th>
-                            <th>Sent</th>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" /></td>
-                            <td>Sublayer.io Support</td>
-                            <td><a href="notification/890adsj8ai90sdfasd">Welcome to Sublayer.io!</a></td>
-                            <td>06/28/2015</td>
-                        </tr>
-                    </table>
+                    <div class="tablecloth">
+                        <table id="NotificationTable">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="SelectAll" /></th>
+                                    <th>Sender</th>
+                                    <th>Subject</th>
+                                    <th>Sent</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             <div class="page" id="Invoices">
                 <a href="#Invoices" class="tab" id="InvoicesTab">Invoices</a>
                 <div class="content">
-                    <table id="InvoiceTable">
-                        <tr class="tablehead">
-                            <th>Invoice #</th>
-                            <th>Domain</th>
-                            <th>Date</th>
-                            <th>Due Date</th>
-                            <th>Total</th>
-                            <th>Paid</th>
-                        </tr>
-                        <tr>
-                            <td><a href="invoice/578902">578902</a></td>
-                            <td><a href="domain/ugf89a0sdfp098usd">Sublayer.io</a></td>
-                            <td>April 1st, 2015</td>
-                            <td>04/14/2015</td>
-                            <td>$54.70</td>
-                            <td></td>
-                        </tr>
-                    </table>
+                    <div class="tablecloth">
+                        <table id="InvoiceTable">
+                            <thead>
+                                <tr>
+                                    <th>Invoice #</th>
+                                    <th>Domain</th>
+                                    <th>Date</th>
+                                    <th>Due Date</th>
+                                    <th>Total</th>
+                                    <th>Paid</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             <div class="page" id="Domains">
                 <a href="#Domains" class="tab" id="DomainsTab">Domains</a>
                 <div class="content">
-                    <table id="DomainTable">
-                        <tr class="tablehead">
-                            <th>Domain</th>
-                            <th>Status</th>
-                            <th>Permissions</th>
-                        </tr>
-                        <tr>
-                            <td><a href="/domain/vu890qawer7yu89asdf">Sublayer.io</a></td>
-                            <td class="good">Online</td>
-                            <td>Owner</td>
-                        </tr>
-                    </table>
+                    <div class="tablecloth">
+                        <table id="DomainTable">
+                            <thead>
+                                <tr>
+                                    <th>Domain</th>
+                                    <th>Status</th>
+                                    <th>Bandwidth</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <form id="CreateDomain" action="/domain" method="POST">
+                        <label for="CreateDomainText">New Domain:</label>
+                        <input type="text" name="domain" />
+                        <input type="submit" value="Create" />
+                    </form>
                 </div>
             </div>
             <div class="page" id="Contacts">

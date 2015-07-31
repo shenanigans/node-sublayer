@@ -42,6 +42,8 @@ var DEFAULT_CONFIG = {
     usernameCollectionName:     "Username",
     clientCollectionName:       "Client",
     confirmationCollectionName: "Confirm",
+    notificationCollectionName: "Notice",
+    invoicesCollectionName:     "Invoice",
     actionDefaults:             {},
     domainCacheLength:          2048,
     domainCacheTimout:          1000 * 60
@@ -207,6 +209,26 @@ sublayer.prototype.listen = function (port, adminPort, callback) {
                         return process.exit (1);
                     }
                     self.ConfirmationCollection = collection;
+                    callback();
+                });
+            },
+            function (callback) {
+                Database.collection (self.config.notificationCollectionName, function (err, collection) {
+                    if (err) {
+                        self.logger.fatal (err);
+                        return process.exit (1);
+                    }
+                    self.NotificationCollection = collection;
+                    callback();
+                });
+            },
+            function (callback) {
+                Database.collection (self.config.invoiceCollectionName, function (err, collection) {
+                    if (err) {
+                        self.logger.fatal (err);
+                        return process.exit (1);
+                    }
+                    self.InvoiceCollection = collection;
                     callback();
                 });
             }
