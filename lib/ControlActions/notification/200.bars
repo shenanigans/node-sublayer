@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="static/Notification.js"></script>
+    <script type="text/javascript">
+require ('client');
+    </script>
+    <title>Sublayer.io</title>
+    <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="static/site.css" />
+    <link rel="stylesheet" type="text/css" href="static/forms.css" />
+    <link rel="stylesheet" type="text/css" href="static/notification.css" />
+</head>
+<body>
+    <h1>{{title}}</h1>
+    <h2>From <a href="/user/{{senderID}}">{{sender}}</a> on <span class="date">{{dayStr date}}</span></h2>
+    <div id="Body">{{{render body}}}</div>
+</body>
+</html>

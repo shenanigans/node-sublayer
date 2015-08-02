@@ -1,0 +1,30 @@
+
+h1 {
+    font-size: 350%;
+    margin: 0.1em 0 0;
+    color: #000;
+}
+
+h2 {
+    font-size: 150%;
+    margin-top: 0;
+    color: #429E16;
+}
+
+h2.notReady {
+    color: #D6AD19;
+}
+
+h2.error {
+    color: #D20E0E;
+}
+
+pre {
+    padding: 0.5em;
+    background-color: #eaeaea;
+}
+
+p {
+    max-width: 40em;
+    margin: 1em 0.5em;
+}

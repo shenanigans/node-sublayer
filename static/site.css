@@ -71,6 +71,7 @@ h1, h2, h3, h4, h5 {
     transition: background-color 0.5s ease-out, color 0.5s ease-out;
     line-height: 1em;
     border: none;
+    outline: none;
     font-size: 100%;
     cursor: pointer;
     vertical-align: top;

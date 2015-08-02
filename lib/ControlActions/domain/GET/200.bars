@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="/static/Domain.js"></script>
+    <script type="text/javascript">
+window.domain = {{{json requested}}};
+require ('client');
+    </script>
+    <title>Sublayer.io</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="/static/site.css" />
+    <link rel="stylesheet" type="text/css" href="/static/forms.css" />
+    <link rel="stylesheet" type="text/css" href="/static/domain.css" />
+</head>
+<body>
+    <div id="Header">
+        <div id="HeaderContent">
+            <a id="Hero" href="/">Sublayer.io</a>
+            <div id="Nav">
+                <a href="/static/news.html">News</a><a href="/static/pricing.html">Pricing</a><a href="/static/documents/index.html">Documentation</a>
+            </div>
+            <form id="Auth" action="/logout" method="GET">
+                <a href="settings"><img src="/static/gear.png" /></a><input type="submit" value="log out" />
+            </form>
+        </div>
+    </div>
+    <h1>{{requested}}</h1>
+    <h2 class="{{domainStatusClass .}}" id="Status">{{domainStatus .}}</h2>
+    {{#unless confirmed}}
+        <span id="ConfirmArea"><form id="Confirm">
+            <h3>Confirm Your Domain</h3>
+            <p>In order to confirm that you control this domain, you must edit the DNS records. You should be able to do this with your domain name provider. Create a new TXT record on the desired domain or subdomain and set its value to your confirmation code.</p><pre>{{dnsRecordBlock .}}</pre>
+            <p>Once the DNS record propagates and becomes available from the Sublayer.io servers you may confirm this domain. This can take up to 24 hours. Use the button below to check the DNS records for this domain.</p>
+            <input type="submit" value="Confirm Domain" />
+        </form></span>
+    {{/unless}}
+    <div id="Footer">
+
+    </div>
+</body>
+</html>

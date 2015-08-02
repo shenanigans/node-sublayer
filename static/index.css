@@ -1,0 +1,80 @@
+
+body {
+    margin-top: 30em;
+    padding-top: 1.75em;
+}
+
+.subheader {
+    font-size: 210%;
+    margin: 0 0 1.3em 0;
+    text-align: center;
+}
+
+.chunk {
+    display: inline-block;
+}
+
+.buzzword {
+    color: #FF24DF;
+}
+
+h3 {
+    margin: 0 0 0.4em 0;
+}
+
+#Features {
+    text-align: center;
+}
+
+.feature {
+    display: inline-block;
+    text-align: left;
+    width: 16em;
+    height: 12em;
+    margin: 0 1em 2em 1em;
+    vertical-align: top;
+    line-height: 1.25em;
+}
+
+.feature p {
+    margin: 0;
+    padding: 0.3em;
+    border-top: 1px solid #CEBECB;
+    color: #2F2F2F;
+}
+
+#OpenSource {
+    margin: 5em -2em 0;
+    padding: 0 2em;
+    overflow: hidden;
+}
+
+#OpenSource h1 {
+    text-align: center;
+}
+
+#LogoRow {
+    text-align: center;
+    padding: 0.7em 0;
+    box-shadow: 0 0 1.5em #cacaca;
+    margin: 2.5em -2em;
+}
+
+#LogoRow img {
+    width: 20%;
+    margin: 0 4%;
+}
+
+.nixon {
+    display: inline-block;
+    margin: -1em 1.2em 0.5em 0;
+    width: 35%;
+    min-width: 10em;
+    float: left;
+}
+
+#OpenSource p {
+    width: 75%;
+    max-width: 720px;
+    margin: 4.3em auto 0;
+}

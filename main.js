@@ -1,28 +1,34 @@
 
-var util         = require ('util');
-var EventEmitter = require ('events').EventEmitter;
-var os           = require ('os');
-var async        = require ('async');
-var MongoDB      = require ('mongodb');
-var submergence  = require ('submergence');
-var substation   = require ('substation');
-var filth        = require ('filth');
-var cachew       = require ('cachew');
-var Gateway      = require ('./lib/Gateway');
-var Action       = require ('./lib/Action');
-var Exacter      = require ('./lib/Exacter');
+var util             = require ('util');
+var EventEmitter     = require ('events').EventEmitter;
+var os               = require ('os');
+var async            = require ('async');
+var MongoDB          = require ('mongodb');
+var Handlebars       = require ('handlebars');
+var submergence      = require ('submergence');
+var substation       = require ('substation');
+var filth            = require ('filth');
+var cachew           = require ('cachew');
+var Gateway          = require ('./lib/Gateway');
+var Action           = require ('./lib/Action');
+var Exacter          = require ('./lib/Exacter');
 
-var GetSession   = require ('./lib/ControlActions/GetSession');
-var PostSession  = require ('./lib/ControlActions/PostSession');
-var PostEvent    = require ('./lib/ControlActions/PostEvent');
-var GetConfig    = require ('./lib/ControlActions/GetConfig');
-var PutConfig    = require ('./lib/ControlActions/PutConfig');
-var RootActions  = require ('./lib/ControlActions/root');
-var AccountActions  = require ('./lib/ControlActions/account');
-var SessionActions  = require ('./lib/ControlActions/session');
-var DomainActions  = require ('./lib/ControlActions/domain');
-var PermitActions  = require ('./lib/ControlActions/permit');
-var ConfirmActions  = require ('./lib/ControlActions/confirm');
+var GetSession       = require ('./lib/ControlActions/GetSession');
+var PostSession      = require ('./lib/ControlActions/PostSession');
+var PostEvent        = require ('./lib/ControlActions/PostEvent');
+var GetConfig        = require ('./lib/ControlActions/GetConfig');
+var PutConfig        = require ('./lib/ControlActions/PutConfig');
+var RootActions      = require ('./lib/ControlActions/root');
+var AccountActions   = require ('./lib/ControlActions/account');
+var SessionActions   = require ('./lib/ControlActions/session');
+var DomainActions    = require ('./lib/ControlActions/domain');
+var PermitActions    = require ('./lib/ControlActions/permit');
+var ConfirmActions   = require ('./lib/ControlActions/confirm');
+var DomainPage       = require ('./lib/ControlActions/domainPage');
+var NotificationPage = require ('./lib/ControlActions/notificationPage');
+var InvoicePage      = require ('./lib/ControlActions/invoicePage');
+
+Handlebars.registerHelper ('json', JSON.stringify);
 
 /**     @struct sublayer.Configuration
     @super submergence.Configuration
@@ -149,6 +155,10 @@ sublayer.prototype.listen = function (port, adminPort, callback) {
     this.adminRouter.addAction ('POST', new RegExp ('/permit/([\\w\\-_]+)$'), PermitActions.POST);
     this.adminRouter.addAction ('DELETE', new RegExp ('/permit/([\\w\\-_]+)/([\\w\\-_]+)$'), PermitActions.DELETE);
     this.adminRouter.addAction ('GET', new RegExp ('/confirm/([\\w\\-_]+)$'), ConfirmActions.GET);
+    this.adminRouter.addAction ('GET', new RegExp ('/domainPage/(\\d+)$'), DomainPage.GET);
+    this.adminRouter.addAction ('GET', new RegExp ('/notificationPage/(\\d+)$'), NotificationPage.GET);
+    this.adminRouter.addAction ('GET', new RegExp ('/invoicePage/(\\d+)$'), InvoicePage.GET);
+    // GET root
     this.adminRouter.addAction ('GET', undefined, RootActions.GET);
 
     var Database = new MongoDB.Db (

@@ -4,11 +4,18 @@
   "main": "main.js",
   "dependencies": {
     "async": "^1.3.0",
+    "browserify": "^11.0.1",
     "graceful-fs": "^4.1.2",
+    "gulp": "^3.9.0",
+    "gulp-util": "^3.0.6",
     "handlebars": "^3.0.3",
+    "highlight.js": "^8.7.0",
     "mailgun-js": "^0.7.1",
+    "marked": "^0.3.5",
     "minimist": "^1.1.1",
     "mongodb": "^1.4.35",
-    "safe-regex": "git://github.com/shenanigans/safe-regex.git#6a62a5be2fae17fcb375d3e2b4d1685dbcd5cac1"
+    "safe-regex": "git://github.com/shenanigans/safe-regex.git#6a62a5be2fae17fcb375d3e2b4d1685dbcd5cac1",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.3.1"
   }
 }
