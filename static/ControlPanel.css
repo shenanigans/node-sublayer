@@ -61,38 +61,12 @@ thead {
     border-bottom: 0.1em solid #FF24DF;
 }
 
-th {
-    background-color: #FFC8F7;
-    padding: 0.5em 0.5em 0.2em;
-    font-weight: 300;
-}
-
-tr:nth-child(odd) {
-    background-color: #D4EFFF;
-}
-
 td {
     padding: 0.3em 0.5em;
 }
 
 td.error {
     color: #f00;
-}
-
-.ghost {
-    text-align: center;
-    display: none;
-    background-color: transparent !important;
-}
-
-.ghost td {
-    padding: 2em 0 0;
-    font-size: 150%;
-    color: #383838;
-}
-
-.ghost:only-child {
-    display: table-row;
 }
 
 #CreateDomain {

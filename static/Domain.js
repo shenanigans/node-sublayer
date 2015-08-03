@@ -18153,6 +18153,17 @@ window.on ('load', function(){
             );
             return false;
         });
+
+
+    var DangerScreen = document.getElementById ('DangerScreen');
+    DangerScreen.on ('click', function(){
+        var open = window.confirm (
+            "Are you sure you want to unlock the Dangerous Options? They're really dangerous!"
+        );
+        if (!open)
+            return;
+        DangerScreen.dispose();
+    });
 });
 
 },{"scum":100,"substation":32}]},{},[]);

@@ -28,7 +28,91 @@ var DomainPage       = require ('./lib/ControlActions/domainPage');
 var NotificationPage = require ('./lib/ControlActions/notificationPage');
 var InvoicePage      = require ('./lib/ControlActions/invoicePage');
 
+// Handlebars helpers
 Handlebars.registerHelper ('json', JSON.stringify);
+Handlebars.registerHelper ('dnsRecordBlock', function (domain) {
+    var subdomain = domain.requested.split ('.').slice (0, -2).join ('.');
+    var str = 'name';
+    for (var i=0,j=Math.max (2, subdomain.length-2); i<j; i++)
+        str += ' ';
+    str +=   'rr   text\n';
+    str += subdomain;
+    if (subdomain.length < 4)
+        for (var i=0,j=4-subdomain.length; i<j; i++)
+            str += ' ';
+    str += '  TXT  sublayer.io=';
+    str += domain._id;
+    return str;
+});
+var BYTESIZE = {
+    kilobytes:  1 << 8,
+    megabytes:  1 << 16,
+    gigabytes:  1 << 24,
+    terabytes:  Math.pow (2, 32),
+    petabytes:  Math.pow (2, 40)
+};
+var BYTE_SHORTS = {
+    bytes:      'bytes',
+    kilobytes:  'KB',
+    megabytes:  'MB',
+    gigabytes:  'GB',
+    terabytes:  'TB',
+    petabytes:  'PB'
+};
+function byteOrder (bytes) {
+    var name = 'bytes';
+    for (var order in BYTESIZE) {
+        if (bytes < BYTESIZE[order])
+            return name;
+        name = order;
+    }
+    return name;
+}
+Handlebars.registerHelper ('bytesize', function (bytes) {
+    var order = byteOrder (bytes);
+    var display = String (bytes / BYTESIZE[order]);
+    var dot = display.indexOf ('.');
+    var dif;
+    if (dot < 0)
+        display += '.00';
+    else if ((dif = display.length - dot) == 2)
+        display += '0';
+    else if (dif > 3)
+        display = display.slice (0, dot + 3);
+
+    var finalStr =
+        display
+      + '<span class="bytesize"><div class="tip">'
+      + order
+      + '</div>'
+      + BYTE_SHORTS[order]
+      + '</span>'
+      ;
+    return finalStr;
+});
+Handlebars.registerHelper ('cost', function (domain) {
+    var cost = String (
+        Math.max (0, Math.round (
+            ( ( ( domain.bandwidth - 100000000 ) * 3 ) / 1000000000 )
+          + ( ( domain.actions - 3000 ) / 200 )
+          + ( ( domain.events - 1000 ) / 200 )
+        ) ) / 100
+    );
+    var dot = cost.indexOf ('.');
+    if (dot < 0)
+        cost = '$' + cost + '.00';
+    else if (cost.length - dot == 2)
+        cost = '$' + cost + '0';
+    else
+        cost = '$' + cost;
+    return cost;
+});
+Handlebars.registerHelper ('commas', function (number) {
+    var str = String (number);
+    for (var i=str.length - 3; i > 0; i-=3)
+        str = str.slice (0, i) + ',' + str.slice (i);
+    return str;
+});
 
 /**     @struct sublayer.Configuration
     @super submergence.Configuration
@@ -88,28 +172,31 @@ sublayer.prototype.getDomain = function (domain, callback) {
         return callback (undefined, cached);
 
     var self = this;
-    this.DomainCollection.findOne ({ domain:domain }, function (err, domainRecord) {
-        if (err) {
-            self.logger.error ({ domain:domain }, 'failed to look up domain');
-            return callback (err);
+    this.DomainCollection.findOne (
+        { domain:domain, config:{ $exists:true } },
+        function (err, domainRecord) {
+            if (err) {
+                self.logger.error ({ domain:domain }, 'failed to look up domain');
+                return callback (err);
+            }
+            if (!domainRecord)
+                return callback();
+
+            if (domainRecord.config.actions && domainRecord.config.actions.length) {
+                for (var i=0,j=domainRecord.config.actions.length; i<j; i++)
+                    domainRecord.config.actions[i] = new Action (
+                        domain,
+                        domainRecord.apiHash,
+                        domainRecord.config.actions[i]
+                    );
+            }
+
+            if (self.domainCache)
+                self.domainCache.set (domain, domainRecord);
+
+            callback (undefined, domainRecord);
         }
-        if (!domainRecord)
-            return callback();
-
-        if (domainRecord.actions && domainRecord.actions.length) {
-            for (var i=0,j=domainRecord.actions.length; i<j; i++)
-                domainRecord.actions[i] = new Action (
-                    domain,
-                    domainRecord.apiHash,
-                    domainRecord.actions[i]
-                );
-        }
-
-        if (self.domainCache)
-            self.domainCache.set (domain, domainRecord);
-
-        callback (undefined, domainRecord);
-    });
+    );
 };
 
 /**     @member/Function listen
@@ -125,16 +212,6 @@ sublayer.prototype.listen = function (port, adminPort, callback) {
             this.config.domainCacheLength,
             this.config.domainCacheTimout
         );
-
-    if (this.config.DomainCollection) {
-        this.DomainCollection = this.config.DomainCollection;
-        this.gateway.init (router, function(){
-            self.server.listen (port, self.gateway, function(){
-                self.server.listen (adminPort, self.adminRouter, callback);
-            });
-        });
-        return;
-    }
 
     this.adminRouter.addAction ('GET', 'user_session', GetSession);
     this.adminRouter.addAction ('POST', 'user_session', PostSession);

@@ -34,6 +34,7 @@ h1, h2, h3, h4, h5 {
     top: 0;
     right: 0;
     box-shadow: 0 0 1.5em rgba(0, 0, 0, 0.71);
+    z-index: 9001;
 }
 
 #Header img {
@@ -131,4 +132,31 @@ h1, h2, h3, h4, h5 {
 
 .boon.visible {
     opacity: 1;
+}
+
+th {
+    text-align: left;
+    background-color: #FFC8F7;
+    padding: 0.5em 0.5em 0.2em;
+    font-weight: 300;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #D4EFFF;
+}
+
+.ghost {
+    text-align: center;
+    display: none;
+    background-color: transparent !important;
+}
+
+.ghost td {
+    padding: 2em 0 0;
+    font-size: 150%;
+    color: #383838;
+}
+
+.ghost:only-child {
+    display: table-row;
 }

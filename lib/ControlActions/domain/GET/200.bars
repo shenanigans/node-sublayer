@@ -35,6 +35,125 @@ require ('client');
             <input type="submit" value="Confirm Domain" />
         </form></span>
     {{/unless}}
+    <h3>Resources</h3>
+    <div id="ResourcesArea">
+        <div id="TotalResources">
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="2">Total Since Last Invoice</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="color:#E80D0D">Bandwidth</td>
+                        <td>{{{bytesize bandwidth}}}</td>
+                    </tr>
+                    <tr>
+                        <td style="color:#228C22">Actions</td>
+                        <td>{{commas actions}}</td>
+                    </tr>
+                    <tr>
+                        <td style="color:#3838D8">Events</td>
+                        <td>{{commas events}}</td>
+                    </tr>
+                    <tr>
+                        <td>Dollars</td>
+                        <td>{{cost .}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <canvas id="ActivityGraph" />
+    </div>
+    <h3>Configuration</h3>
+    <div id="APIKeyArea">
+        Your API Key is <span id="APIKey">{{apiKey}}</span>
+    </div>
+    {{#config}}
+        <h4>Default Templates</h4>
+        <table id="TemplateTable">
+            <thead>
+                <th>status</th>
+                <th>host</th>
+                <th>path</th>
+                <th>port</th>
+            </thead>
+            <tbody>
+                <tr class="ghost">
+                    <td colspan="4">No Default Templates.</td>
+                </tr>
+                {{#each template}}
+                    <tr>
+                        <td>{{@key}}</td>
+                        <td>{{host}}</td>
+                        <td>{{path}}</td>
+                        <td>{{port}}</td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        <h4>Server events</h4>
+        <table id="EventTable">
+            <thead>
+                <th>event</th>
+                <th>host</th>
+                <th>path</th>
+                <th>port</th>
+            </thead>
+            <tbody>
+                <tr class="ghost">
+                    <td colspan="4">No Events.</td>
+                </tr>
+                {{#each events}}
+                    <tr>
+                        <td>{{@key}}</td>
+                        <td>{{host}}</td>
+                        <td>{{path}}</td>
+                        <td>{{port}}</td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        <h4>Actions</h4>
+        <table id="ActionTable">
+            <thead>
+                <th>method</th>
+                <th>route</th>
+                <th>name</th>
+                <th>host</th>
+                <th>path</th>
+                <th>port</th>
+            </thead>
+            <tbody>
+                <tr class="ghost">
+                    <td colspan="4">No Actions.</td>
+                </tr>
+                {{#actions}}
+                    <tr>
+                        <td>{{method}}</td>
+                        <td>{{route}}</td>
+                        <td>{{name}}</td>
+                        <td>{{forward.host}}</td>
+                        <td>{{forward.path}}</td>
+                        <td>{{forward.port}}</td>
+                    </tr>
+                {{/actions}}
+            </tbody>
+        </table>
+        <h3 id="DangerousHeader">Dangerous Options</h3>
+        <div id="DangerousOptions">
+            <form id="RegenerateAPIKey">
+                Generate a new API Key
+                <br />
+                <input type="submit" value="generate" />
+            </form>
+            <div id="DangerScreen"><div><div>Click To Unlock</div></div></div>
+        </div>
+    {{/config}}
+    <div id="ConfigViewer">
+
+    </div>
     <div id="Footer">
 
     </div>
