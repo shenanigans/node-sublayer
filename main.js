@@ -114,8 +114,33 @@ Handlebars.registerHelper ('commas', function (number) {
     return str;
 });
 
-/**     @struct sublayer.Configuration
-    @super submergence.Configuration
+
+
+/**     @module/class sublayer
+    Realtime and peer to peer service layer.
+@argument/:Configuration config
+@returns/sublayer
+    If the `new` keyword is not used, an instance is created and returned.
+*/
+function sublayer (config) {
+    if (!(this instanceof sublayer))
+        return new sublayer (config);
+
+    this.config = filth.clone (submergence.DEFAULT_CONFIG);
+    filth.merge (this.config, DEFAULT_CONFIG);
+    filth.merge (this.config, config);
+
+    this.server = new submergence (this.config);
+    this.logger = this.server.logger;
+    this.gateway = new Gateway (this, this.config, this.server);
+    this.adminRouter = new substation.Router (this, this.config);
+    this.exacter = new Exacter (this, this.config);
+}
+module.exports = sublayer;
+
+
+/**     @submodule/class Configuration
+    @super submergence:Configuration
 
 @member/String databaseName
     @default `"sublayer"`
@@ -140,32 +165,18 @@ var DEFAULT_CONFIG = {
 };
 
 
-/**     @module/class sublayer
-    Realtime and peer to peer service layer.
-@argument/.Configuration config
-@returns/sublayer
-    If the `new` keyword is not used, an instance is created and returned.
-@event userOnline
-@event clientOnline
-@event userOffline
-@event clientOffline
+/**     @submodule/class Domain
+    The database representation of a Domain.
+@member/infosex:uid _id
 */
-function sublayer (config) {
-    if (!(this instanceof sublayer))
-        return new sublayer (config);
 
-    this.config = filth.clone (submergence.DEFAULT_CONFIG);
-    filth.merge (this.config, DEFAULT_CONFIG);
-    filth.merge (this.config, config);
+/**     @member/Function getDomain
 
-    this.server = new submergence (this.config);
-    this.logger = this.server.logger;
-    this.gateway = new Gateway (this, this.config, this.server);
-    this.adminRouter = new substation.Router (this, this.config);
-    this.exacter = new Exacter (this, this.config);
-}
-module.exports = sublayer;
-
+@argument/String domain
+@callback
+    @argument/Error|undefined err
+    @argument/:Domain|undefined domain
+*/
 sublayer.prototype.getDomain = function (domain, callback) {
     var cached;
     if (this.domainCache && ( cached = this.domainCache.get (domain) ))
@@ -201,6 +212,7 @@ sublayer.prototype.getDomain = function (domain, callback) {
 
 /**     @member/Function listen
 @argument/Number port
+@argument/Number adminPort
 @callback
     @argument/Error|undefined err
 */

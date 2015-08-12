@@ -1,0 +1,76 @@
+
+h1, h2 {
+    text-align: center;
+}
+
+h1 {
+    font-size: 500%;
+    margin: 0.5em 0 0;
+}
+
+h2 {
+    color: #464646;
+    font-size: 200%;
+}
+
+h3 {
+    font-size: 250%;
+    margin-bottom: 2em;
+}
+
+br {
+    clear: both;
+}
+
+.category {
+    text-align: center;
+    margin-top: 5em;
+    padding-top: 1em;
+    border-top: 0.2em solid #ddd;
+}
+
+#AlwaysFree {
+    font-size: 400%;
+    margin-top: 1em;
+}
+
+.rnf {
+    width:20%;
+    margin: 0 2%;
+}
+
+.cost {
+    display: inline-block;
+    margin: 0 5% 2em;
+    width: 30%;
+    padding: 2em 0 3em;
+    border: 0.2em solid #cacaca;
+    border-radius: 0.3em;
+    vertical-align: top;
+    height: 8.5em;
+}
+
+.free {
+
+}
+
+.paid {
+
+}
+
+#BandwidthImg {
+    width: 90%;
+    margin: 0 0 4em;
+}
+
+.price {
+    font-size: 200%;
+}
+
+.price span {
+    font-size: 60%;
+}
+
+.details {
+
+}

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>likeness.helpers.JSContext documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../index.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../highlight.css" />
+    <script type="text/javascript" src="../../../../../../index.js"></script>
+</head>
+<body class="class" id="component_2118">
+    <div id="outer">
+        <div id="header">
+            
+            
+            
+            
+            
+            <a class="ctype" href="../../../../../../index.html">class</a>
+            <span></span>
+            <span class="breadcrumbs">
+                <span class="delimiter">:</span><a href="../../../../index.html" class="breadcrumb module">likeness</a><span class="delimiter">.</span><a href="../../index.html" class="breadcrumb property">helpers</a><span class="delimiter">.</span><a href="index.html" class="breadcrumb class">JSContext</a>
+            </span>
+        </div>
+<div id="TOC">
+        <div class="section">
+            <h4 class="header"><a href="#members">Member Properties</a></h4>
+                <a href="#component_2104">queues</a><br />
+                <a href="#component_2101">universeCache</a><br />
+        </div>
+        <div class="section">
+            <h4 class="header"><a href="#methods">Methods</a></h4>
+                <a href="#component_2117">compile</a><br />
+                <a href="#component_2111">resolve</a><br />
+        </div>
+</div>
+        <div id="content">
+            <!-- basic document info -->
+            <div id="details">
+                <div class="clear"></div>
+                    <!-- constructor function -->
+            </div>
+<div class="children">
+        <!-- member properties -->
+        <h1 id="members" class="header">Member Properties</h1>
+        <div class="section members">
+<div id="component_2104" class="child member">
+    <span class="signature">
+        <span>
+            <span class="valsep">|</span>
+            <a class="valtype" href="../../../../../../property/object/index.html">Object</a>
+            
+        </span>
+        
+        <a class="title" href="index.html#component_2104">queues</a>
+    </span>
+    <div class="info">
+<span class="markdown"><p>URLs (without hash portion) with concurrent active requests mapped to Arrays of callbacks. Used
+to prevent multiple network requests to the same URL.</p>
+</span>
+    </div>
+</div>
+<div id="component_2101" class="child member">
+    <span class="signature">
+        <span>
+            <span class="valsep">|</span>
+            <a class="valtype" href="../../../../../../property/object/index.html">Object</a>
+            
+        </span>
+        
+        <a class="title" href="index.html#component_2101">universeCache</a>
+    </span>
+    <div class="info">
+<span class="markdown"><p>This multi-layer cache is organized as <code>{ &quot;hostName.com&quot;:{ &quot;/path&quot;:{ &quot;#hash&quot;:{
+$schema:&quot;http://json-schema.org ...</code></p>
+</span>
+    </div>
+</div>
+        </div>
+        <!-- methods -->
+        <h1 id="methods" class="header">Methods</h1>
+        <div class="section members">
+<div id="component_2117" class="child function">
+    <span class="signature">
+        <span></span>
+        <a href="member/compile/index.html" class="title">
+            compile
+        </a>
+        (
+            <span>
+<div class="argument">
+    
+    
+        <a class="title" href="#component_2114">
+            ref
+        </a>
+    
+    <span class="comma">,</span>
+</div>
+            </span>
+        ) {
+    </span>
+    <div class="info">
+        <span class="markdown"><p>Resolve and recursively scan a schema, resolving all non-recursive references.</p>
+<p>Resolve and recursively scan a schema, resolving all non-recursive references.</p>
+</span>
+            <h4>Arguments</h4>
+            <div class="section arguments">
+                    <div class="child argument " id="component_2114">
+<span class="signature">
+    
+    
+        <span>
+            <span class="valsep punctuation punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+            
+        
+            <span class="valsep punctuation punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+            
+        </span>
+        <a class="name" href="javascript:return false;">
+            ref
+        </a>
+    
+</span>
+                        <div class="info">
+                            <span class="markdown"></span>
+                        </div>
+                    </div>
+            </div>
+        <div class="tail" /></div>
+    </div>
+</div>
+<div id="component_2111" class="child function">
+    <span class="signature">
+        <span></span>
+        <a href="member/resolve/index.html" class="title">
+            resolve
+        </a>
+        (
+            <span>
+<div class="argument">
+    
+    
+        <a class="title" href="#component_2108">
+            ref
+        </a>
+    
+    <span class="comma">,</span>
+</div>
+            </span>
+        ) {
+    </span>
+    <div class="info">
+        <span class="markdown"><p>Acquire a schema for a local or remote reference.</p>
+</span>
+            <h4>Arguments</h4>
+            <div class="section arguments">
+                    <div class="child argument " id="component_2108">
+<span class="signature">
+    
+    
+        <span>
+            <span class="valsep punctuation punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+            
+        </span>
+        <a class="name" href="javascript:return false;">
+            ref
+        </a>
+    
+</span>
+                        <div class="info">
+                            <span class="markdown"></span>
+                        </div>
+                    </div>
+            </div>
+        <div class="tail" /></div>
+    </div>
+</div>
+        </div>
+</div>
+        </div>
+    </div>
+    <div id="footer">
+        This document was generated with
+        <a href="https://github.com/shenanigans/node-doczar">doczar</a>
+        at <span class="time">4:13pm</span> on <span class="date">8/11/2015</span>
+    </div>
+</body>
+</html>

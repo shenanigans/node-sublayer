@@ -148,7 +148,7 @@ require ('client');
             </div>
             <div id="Device Access" class="feature">
                 <h3>Device Access</h3>
-                <p>Sometimes it's not enough to know who is using your app - sometimes you need to know <i>how</i>. Sublayer tracks the individual client devices used to access your app and routes realtime events directly to them.</p>
+                <p>Sometimes it's not enough to know who is using your app - sometimes you need to know <i>how</i>. Sublayer tracks individual client devices and routes realtime events directly to them.</p>
             </div>
             <div id="Realtime" class="feature">
                 <h3>Real Time Events</h3>

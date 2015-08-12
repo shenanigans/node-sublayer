@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>substation:Remote#listen~summary documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../index.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../highlight.css" />
+    <script type="text/javascript" src="../../../../../../../../index.js"></script>
+</head>
+<body class="spare" id="component_1523">
+    <div id="outer">
+        <div id="header">
+            
+            
+            
+            
+            
+            <a class="ctype" href="../../../../../../../../index.html">spare</a>
+            <span></span>
+            <span class="breadcrumbs">
+                <span class="delimiter">:</span><a href="../../../../../../index.html" class="breadcrumb module">substation</a><span class="delimiter">:</span><a href="../../../../index.html" class="breadcrumb module">Remote</a><span class="delimiter">#</span><a href="../../index.html" class="breadcrumb member">listen</a><span class="delimiter">~</span><a href="index.html" class="breadcrumb spare">summary</a>
+            </span>
+        </div>
+        <div id="content">
+            <!-- basic document info -->
+            <div id="details">
+                    <div class="markdown"><p>Reads the remote configuration and compares it to the local instance. If the remote
+configuration does not match, the <code>Remote</code> will do one of the following:</p>
+<ul>
+<li>By default, the process will exit.</li>
+<li>If the <a href="javascript:return false;">APIOverwriteActions</a> option is set, the local
+ configuration is written to the server. If this fails for some reason, the process will
+ exit.</li>
+<li>If the <a href="javascript:return false;">APIAcceptConfig</a> option is set, the discrepency is
+ logged but startup continues.</li>
+</ul>
+<p>Once the remote configuration is resolved, <a href="../../../../../../module/action/index.html"><code>actions</code></a> have their <a href="javascript:return false;"><code>setup</code></a> Functions run. Finally, the port is opened and  this
+<code>Remote</code> begins accepting requests.</p>
+</div>
+                <div class="clear"></div>
+            </div>
+<div class="children">
+</div>
+        </div>
+    </div>
+    <div id="footer">
+        This document was generated with
+        <a href="https://github.com/shenanigans/node-doczar">doczar</a>
+        at <span class="time">4:47pm</span> on <span class="date">8/11/2015</span>
+    </div>
+</body>
+</html>
