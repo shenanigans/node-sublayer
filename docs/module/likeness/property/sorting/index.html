@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>likeness.Sorting documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../index.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../highlight.css" />
+    <script type="text/javascript" src="../../../../index.js"></script>
+</head>
+<body class="module" id="component_2103">
+    <div id="outer">
+        <div id="header">
+            
+            
+            
+            
+            
+            <a class="ctype" href="../../../../index.html">module</a>
+            <span></span>
+            <span class="breadcrumbs">
+                <span class="delimiter">:</span><a href="../../index.html" class="breadcrumb module">likeness</a><span class="delimiter">:</span><a href="index.html" class="breadcrumb module">Sorting</a>
+            </span>
+        </div>
+<div id="TOC">
+        <div class="section">
+            <h4 class="header"><a href="#functions">Static Functions</a></h4>
+                <a href="#component_2094">getDocSort</a><br />
+                <a href="#component_2085">getLeafSort</a><br />
+                <a href="#component_2100">matchLeaves</a><br />
+        </div>
+</div>
+        <div id="content">
+            <!-- basic document info -->
+            <div id="details">
+                        <div class="markdown"><p>Tools for sorting and comparing documents.</p>
+</div>
+                <div class="clear"></div>
+            </div>
+<div class="children">
+        <!-- static functions -->
+        <h1 id="functions" class="header">Static Functions</h1>
+        <div class="section properties">
+<div id="component_2094" class="child function">
+    <span class="signature">
+        <span>
+            <span class="valsep">,</span>
+            <span class="types">
+                <span class="valsep punctuation">|</span>
+                <a class="valtype" href="../../../../property/function/index.html">Function</a>
+            </span>
+        </span>
+        <a href="property/getdocsort/index.html" class="title">
+            getDocSort
+        </a>
+        (
+            <span>
+<div class="argument">
+    
+    
+        <a class="title" href="#component_2088">
+            sspec
+        </a>
+    
+    <span class="comma">,</span>
+</div>
+            </span>
+        ) {
+    </span>
+    <div class="info">
+        <span class="markdown"><p>Creates a complex sort function closing on the provided specification document. Documents are
+compared according to the specification.</p>
+</span>
+            <h4>Arguments</h4>
+            <div class="section arguments">
+                    <div class="child argument " id="component_2088">
+<span class="signature">
+    
+    
+        <span>
+            <span class="valsep punctuation punctuation">|</span>
+            <a class="valtype" href="../../../../property/object/index.html">Object</a>
+            
+        </span>
+        <a class="name" href="javascript:return false;">
+            sspec
+        </a>
+    
+</span>
+                        <div class="info">
+                            <span class="markdown"><p>A map of dot-delimited paths to Number directions (<code>1</code> or <code>-1</code>).</p>
+</span>
+                        </div>
+                    </div>
+            </div>
+            <h4>Returns</h4>
+            <div class="section returns">
+                <div class="return">
+<div id="component_2091" class="child returns">
+    <span class="signature">
+        <span>
+            <span class="valsep">|</span>
+            <a class="valtype" href="../../../../property/function/index.html">Function</a>
+            
+        </span>
+        
+        <a class="title" href="javascript:return false;"></a>
+    </span>
+    <div class="info">
+<span class="markdown"><p>A Function suitable for use with <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort"><code>standard sorting</code></a>.</p>
+</span>
+    </div>
+</div>
+                </div>
+            </div>
+        <div class="tail" /></div>
+    </div>
+</div>
+<div id="component_2085" class="child function">
+    <span class="signature">
+        <span>
+            <span class="valsep">,</span>
+            <span class="types">
+                <span class="valsep punctuation">|</span>
+                <a class="valtype" href="../../../../property/function/index.html">Function</a>
+            </span>
+        </span>
+        <a href="property/getleafsort/index.html" class="title">
+            getLeafSort
+        </a>
+        (
+            <span>
+<div class="argument">
+    
+    
+        <a class="title" href="#component_2079">
+            sspec
+        </a>
+    
+    <span class="comma">,</span>
+</div>
+            </span>
+        ) {
+    </span>
+    <div class="info">
+        <span class="markdown"><p>Creates a simple sort function closing on the provided direction. Documents are compared
+according to the <a href="http://docs.mongodb.org/manual/reference/method/cursor.sort/">MongoDB sorting spec</a>.</p>
+</span>
+            <h4>Arguments</h4>
+            <div class="section arguments">
+                    <div class="child argument " id="component_2079">
+<span class="signature">
+    
+    
+        <span>
+            <span class="valsep punctuation punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>
+            
+        </span>
+        <a class="name" href="javascript:return false;">
+            sspec
+        </a>
+    
+</span>
+                        <div class="info">
+                            <span class="markdown"><p>The direction, <code>1</code> or <code>-1</code> to sort.</p>
+</span>
+                        </div>
+                    </div>
+            </div>
+            <h4>Returns</h4>
+            <div class="section returns">
+                <div class="return">
+<div id="component_2082" class="child returns">
+    <span class="signature">
+        <span>
+            <span class="valsep">|</span>
+            <a class="valtype" href="../../../../property/function/index.html">Function</a>
+            
+        </span>
+        
+        <a class="title" href="javascript:return false;"></a>
+    </span>
+    <div class="info">
+<span class="markdown"><p>A Function suitable for use with <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort"><code>standard sorting</code></a>.</p>
+</span>
+    </div>
+</div>
+                </div>
+            </div>
+        <div class="tail" /></div>
+    </div>
+</div>
+<div id="component_2100" class="child function">
+    <span class="signature">
+        <span>
+            <span class="valsep">,</span>
+            <span class="types">
+                <span class="valsep punctuation">|</span>
+                <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>
+            </span>
+        </span>
+        <a href="property/matchleaves/index.html" class="title">
+            matchLeaves
+        </a>
+        (
+            <span>
+<div class="argument">
+    
+    
+        <a class="title" href="#component_2095">
+            able
+        </a>
+    
+    <span class="comma">,</span>
+</div>
+            
+<div class="argument">
+    
+    
+        <a class="title" href="#component_2096">
+            baker
+        </a>
+    
+    <span class="comma">,</span>
+</div>
+            </span>
+        ) {
+    </span>
+    <div class="info">
+        <span class="markdown"><p>Compare two documents for deep equality.</p>
+</span>
+            <h4>Arguments</h4>
+            <div class="section arguments">
+                    <div class="child argument " id="component_2095">
+<span class="signature">
+    
+    
+        <span></span>
+        <a class="name" href="javascript:return false;">
+            able
+        </a>
+    
+</span>
+                        <div class="info">
+                            <span class="markdown"></span>
+                        </div>
+                    </div>
+                    <div class="child argument " id="component_2096">
+<span class="signature">
+    
+    
+        <span></span>
+        <a class="name" href="javascript:return false;">
+            baker
+        </a>
+    
+</span>
+                        <div class="info">
+                            <span class="markdown"></span>
+                        </div>
+                    </div>
+            </div>
+            <h4>Returns</h4>
+            <div class="section returns">
+                <div class="return">
+<div id="component_2097" class="child returns">
+    <span class="signature">
+        <span>
+            <span class="valsep">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>
+            
+        </span>
+        
+        <a class="title" href="javascript:return false;">isEqual</a>
+    </span>
+    <div class="info">
+<span class="markdown"></span>
+    </div>
+</div>
+                </div>
+            </div>
+        <div class="tail" /></div>
+    </div>
+</div>
+        </div>
+</div>
+        </div>
+    </div>
+    <div id="footer">
+        This document was generated with
+        <a href="https://github.com/shenanigans/node-doczar">doczar</a>
+        at <span class="time">3:45pm</span> on <span class="date">8/14/2015</span>
+    </div>
+</body>
+</html>

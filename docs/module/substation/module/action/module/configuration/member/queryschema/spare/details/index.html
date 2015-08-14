@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>substation:Action:Configuration#querySchema~details documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../../../index.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../../../../highlight.css" />
+    <script type="text/javascript" src="../../../../../../../../../../index.js"></script>
+</head>
+<body class="spare" id="component_1608">
+    <div id="outer">
+        <div id="header">
+            
+            
+            
+            
+            
+            <a class="ctype" href="../../../../../../../../../../index.html">spare</a>
+            <span></span>
+            <span class="breadcrumbs">
+                <span class="delimiter">:</span><a href="../../../../../../../../index.html" class="breadcrumb module">substation</a><span class="delimiter">:</span><a href="../../../../../../index.html" class="breadcrumb module">Action</a><span class="delimiter">:</span><a href="../../../../index.html" class="breadcrumb module">Configuration</a><span class="delimiter">#</span><a href="../../index.html" class="breadcrumb member">querySchema</a><span class="delimiter">~</span><a href="index.html" class="breadcrumb spare">details</a>
+            </span>
+        </div>
+        <div id="content">
+            <!-- basic document info -->
+            <div id="details">
+                    <div class="markdown"><p>A JSON Schema document used to restrict request url query terms. The query is mapped as a simple
+flat Object and the field <code>_domestic</code> is automatically stripped before validation. Failure to
+validate will cause a <code>406</code> response to be automatically sent. When <code>querySchema</code> is present, an
+Action&#39;s <code>request.query</code> can always be assumed to conform. The parent server will automatically
+respond to OPTIONS requests with <code>{ VERB:{ body:bodySchema, query:querySchema }, ...</code>.</p>
+<p>Schemata are pre-compiled with <a href="https://github.com/shenanigans/node-likeness">likeness</a> for
+rapid validation. This allows <code>$ref</code> to validate much more quickly, however, it will load
+references when the server starts and does not keep them up to date (yet).</p>
+</div>
+                <div class="clear"></div>
+            </div>
+<div class="children">
+</div>
+        </div>
+    </div>
+    <div id="footer">
+        This document was generated with
+        <a href="https://github.com/shenanigans/node-doczar">doczar</a>
+        at <span class="time">3:45pm</span> on <span class="date">8/14/2015</span>
+    </div>
+</body>
+</html>

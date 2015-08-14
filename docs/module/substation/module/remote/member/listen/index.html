@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>substation:Remote#listen documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../index.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../highlight.css" />
+    <script type="text/javascript" src="../../../../../../index.js"></script>
+</head>
+<body class="member" id="component_1525">
+    <div id="outer">
+        <div id="header">
+            
+            
+            
+            
+            
+            <a class="ctype" href="../../../../../../index.html">member</a>
+            <span>
+                <a class="valtype" href="../../../../../../property/function/index.html">Function</a>
+                
+                <span class="valsep">|</span>
+            </span>
+            <span class="breadcrumbs">
+                <span class="delimiter">:</span><a href="../../../../index.html" class="breadcrumb module">substation</a><span class="delimiter">:</span><a href="../../index.html" class="breadcrumb module">Remote</a><span class="delimiter">#</span><a href="index.html" class="breadcrumb member">listen</a>
+            </span>
+        </div>
+<div id="TOC">
+            <div class="section">
+                <h4 class="header"><a href="#arguments">Arguments</a></h4>
+                    <a href="#component_1519">port</a><br />
+                    <a href="#component_1522">callback</a><br />
+            </div>
+</div>
+        <div id="content">
+                <h1 class="signature">
+                    listen (
+<div class="argument">
+    
+    
+        <span>
+            <span class="valsep punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>
+            
+        </span>
+        <a class="title" href="#component_1519">
+            port
+        </a>
+    
+    <span class="comma">,</span>
+</div>
+<div class="argument">
+    
+    
+        <span></span>
+        <a class="title" href="#component_1522">
+            callback
+        </a>
+    
+    <span class="comma">,</span>
+</div>
+                    ) {
+                </h1>
+            <!-- basic document info -->
+            <div id="details">
+                        <div class="markdown"><p>Reads the remote configuration and compares it to the local instance. If the remote
+configuration does not match, the <code>Remote</code> will do one of the following:</p>
+<ul>
+<li>By default, the process will exit.</li>
+<li>If the <a href="javascript:return false;">APIOverwriteActions</a> option is set, the local
+ configuration is written to the server. If this fails for some reason, the process will
+ exit.</li>
+<li>If the <a href="javascript:return false;">APIAcceptConfig</a> option is set, the discrepency is
+ logged but startup continues.</li>
+</ul>
+<p>Once the remote configuration is resolved, <a href="../../../../module/action/index.html"><code>actions</code></a> have their <a href="javascript:return false;"><code>setup</code></a> Functions run. Finally, the port is opened and  this
+<code>Remote</code> begins accepting requests.</p>
+</div>
+                <div class="clear"></div>
+            </div>
+<div class="children">
+            <h2>Arguments</h2>
+            <div class="section arguments">
+                    <div class="child argument" id="component_1519">
+<span class="signature">
+    
+    
+        <span>
+            <span class="valsep punctuation punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a>
+            
+        </span>
+        <a class="name" href="index.html#component_1519">
+            port
+        </a>
+    
+</span>
+                        <div class="info">
+                            <span class="markdown"><p>The port number to listen on.</p>
+</span>
+                        </div>
+                    </div>
+                    <div class="child argument" id="component_1522">
+<span class="signature">
+    
+    
+        <span></span>
+        <a class="name" href="index.html#component_1522">
+            callback
+        </a>
+    <span>
+        (
+        ) {
+    </span>
+</span>
+                        <div class="info">
+                            <span class="markdown"><p>The server is now accepting requests. If something prevents this, the process will exit with
+status code <code>1</code>.</p>
+</span>
+                                <h5>Arguments</h5>
+                                <div class="section arguments">
+                                </div>
+                        </div>
+                    </div>
+            </div>
+</div>
+        </div>
+    </div>
+    <div id="footer">
+        This document was generated with
+        <a href="https://github.com/shenanigans/node-doczar">doczar</a>
+        at <span class="time">3:45pm</span> on <span class="date">8/14/2015</span>
+    </div>
+</body>
+</html>

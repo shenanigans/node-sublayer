@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>substation:Remote#sendEvent documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../../../index.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../highlight.css" />
+    <script type="text/javascript" src="../../../../../../index.js"></script>
+</head>
+<body class="member" id="component_1544">
+    <div id="outer">
+        <div id="header">
+            
+            
+            
+            
+            
+            <a class="ctype" href="../../../../../../index.html">member</a>
+            <span>
+                <a class="valtype" href="../../../../../../property/function/index.html">Function</a>
+                
+                <span class="valsep">|</span>
+            </span>
+            <span class="breadcrumbs">
+                <span class="delimiter">:</span><a href="../../../../index.html" class="breadcrumb module">substation</a><span class="delimiter">:</span><a href="../../index.html" class="breadcrumb module">Remote</a><span class="delimiter">#</span><a href="index.html" class="breadcrumb member">sendEvent</a>
+            </span>
+        </div>
+<div id="TOC">
+            <div class="section">
+                <h4 class="header"><a href="#arguments">Arguments</a></h4>
+                    <a href="#component_1528">user</a><br />
+                    <a href="#component_1531">client</a><br />
+                    <a href="#component_1534">info</a><br />
+                    <a href="#component_1541">callback</a><br />
+            </div>
+</div>
+        <div id="content">
+                <h1 class="signature">
+                    sendEvent (
+<div class="argument">
+    
+    
+        <span>
+            <span class="valsep punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+            
+        </span>
+        <a class="title" href="#component_1528">
+            user
+        </a>
+    
+    <span class="comma">,</span>
+</div>
+<div class="argument">
+    <span class="optionBracket">[</span>
+    
+        <span>
+            <span class="valsep punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+            
+        </span>
+        <a class="title" href="#component_1531">
+            client
+        </a>
+    <span class="optionBracket">]</span>
+    <span class="comma">,</span>
+</div>
+<div class="argument">
+    
+    
+        <span>
+            <span class="valsep punctuation">|</span>
+            <a class="valtype" href="../../../../../../property/array/index.html">Array</a>
+            
+        </span>
+        <a class="title" href="#component_1534">
+            info
+        </a>
+    
+    <span class="comma">,</span>
+</div>
+<div class="argument">
+    <span class="optionBracket">[</span>
+    
+        <span></span>
+        <a class="title" href="#component_1541">
+            callback
+        </a>
+    <span class="optionBracket">]</span>
+    <span class="comma">,</span>
+</div>
+                    ) {
+                </h1>
+            <!-- basic document info -->
+            <div id="details">
+                        <div class="markdown"><p>Send an event to a User or User/Client pair with at least one active <code>Socket.io</code> connection.
+These are best-effort events - delivery will not be ensured, just attempted. Messages with
+ensured delivery must be handled in the application. Guaranteed delivery like <code>substation</code> could
+provide is of limited value because it only guarantees that the message arrived, not that it was
+successfully acted upon.</p>
+<p>Makes an http <code>POST</code> request against the remote service on the path <code>/event</code>.</p>
+</div>
+                <div class="clear"></div>
+            </div>
+<div class="children">
+            <h2>Arguments</h2>
+            <div class="section arguments">
+                    <div class="child argument" id="component_1528">
+<span class="signature">
+    
+    
+        <span>
+            <span class="valsep punctuation punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+            
+        </span>
+        <a class="name" href="index.html#component_1528">
+            user
+        </a>
+    
+</span>
+                        <div class="info">
+                            <span class="markdown"><p>Send events to connections with this User ID.</p>
+</span>
+                        </div>
+                    </div>
+                    <div class="child argument" id="component_1531">
+<span class="signature">
+    
+        <div class="flag optional">optional</div>
+    
+        <span>
+            <span class="valsep punctuation punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a>
+            
+        </span>
+        <a class="name" href="index.html#component_1531">
+            client
+        </a>
+    
+</span>
+                        <div class="info">
+                            <span class="markdown"><p>If present, narrows the User ID selection to this specific User/Client pair.</p>
+</span>
+                        </div>
+                    </div>
+                    <div class="child argument" id="component_1534">
+<span class="signature">
+    
+    
+        <span>
+            <span class="valsep punctuation punctuation">|</span>
+            <a class="valtype" href="../../../../../../property/array/index.html">Array</a>
+            
+        </span>
+        <a class="name" href="index.html#component_1534">
+            info
+        </a>
+    
+</span>
+                        <div class="info">
+                            <span class="markdown"><p>The argument parameters as they will appear on the client, beginning with the String name of the
+event to emit.</p>
+</span>
+                        </div>
+                    </div>
+                    <div class="child argument" id="component_1541">
+<span class="signature">
+    
+        <div class="flag optional">optional</div>
+    
+        <span></span>
+        <a class="name" href="callback/callback/index.html">
+            callback
+        </a>
+    <span>
+        (
+<div class="argument">
+    
+    
+        <span>
+            <span class="valsep punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>
+            
+        
+            <span class="valsep punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>
+            
+        </span>
+        <a class="title" href="#component_1537">
+            err
+        </a>
+    
+    <span class="comma">,</span>
+</div>
+<div class="argument">
+    
+    
+        <span>
+            <span class="valsep punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>
+            
+        </span>
+        <a class="title" href="#component_1540">
+            didReceive
+        </a>
+    
+    <span class="comma">,</span>
+</div>
+        ) {
+    </span>
+</span>
+                        <div class="info">
+                            <span class="markdown"></span>
+                                <h5>Arguments</h5>
+                                <div class="section arguments">
+                                        <div class="child argument">
+<span class="signature">
+    
+    
+        <span>
+            <span class="valsep punctuation punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>
+            
+        
+            <span class="valsep punctuation punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>
+            
+        </span>
+        <a class="name" href="javascript:return false;">
+            err
+        </a>
+    
+</span>
+                                            <div class="info">
+                                                <span class="markdown"><p>If a technical Error prevented the attempt for proceeding, it is passed here.</p>
+</span>
+                                            </div>
+                                        </div>
+                                        <div class="child argument">
+<span class="signature">
+    
+    
+        <span>
+            <span class="valsep punctuation punctuation">|</span>
+            <a class="valtype" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a>
+            
+        </span>
+        <a class="name" href="javascript:return false;">
+            didReceive
+        </a>
+    
+</span>
+                                            <div class="info">
+                                                <span class="markdown"><p>Whether a client is expected to receive the event. This result value is produced early,
+after connections have been found but before any data has been sent. It is possible, though
+unlikely, that one of the selected connections will go offline in the next fistfull of
+milliseconds, resulting in a <code>true</code> for <code>didReceive</code> when no events were in fact delivered.</p>
+</span>
+                                            </div>
+                                        </div>
+                                </div>
+                        </div>
+                    </div>
+            </div>
+</div>
+        </div>
+    </div>
+    <div id="footer">
+        This document was generated with
+        <a href="https://github.com/shenanigans/node-doczar">doczar</a>
+        at <span class="time">3:45pm</span> on <span class="date">8/14/2015</span>
+    </div>
+</body>
+</html>
