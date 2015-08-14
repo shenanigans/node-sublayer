@@ -26,19 +26,20 @@
                     <div class="markdown"><h1 id="node-substation">node-substation</h1>
 <p><strong>Warning</strong> This project is currently in alpha testing.</p>
 <p>A realtime application gateway, session manager, event router and WebRTC signaling server for
-<a href="https://nodejs.org/">Node.js</a> and <a href="https://www.mongodb.org/">MongoDB</a>.</p>
+<a href="https://nodejs.org/">Node.js</a> and optionally a 100% local deployment with <a href="https://www.mongodb.org/">MongoDB</a>. <code>substation</code> aims to provide:</p>
 <ul>
 <li>scalable deployment out of the box</li>
-<li>manages database-backed sessions and browser cookies</li>
-<li>provides robust XSS-attack protection</li>
-<li>obfuscates <a href="http://socket.io/">Socket.io</a> over your REST api</li>
-<li>validates requests with JSON Schema</li>
-<li>exposes your api and schema with automatic OPTIONS support</li>
-<li>passively routes best-effort events to users connected over Socket.io</li>
-<li>automates WebRTC connections between authenticated users</li>
+<li>database-backed sessions and browser cookies</li>
+<li>robust XSS-attack protection</li>
+<li><a href="http://socket.io/">Socket.io</a> over your existing REST or RPC api</li>
+<li>request validation with JSON Schema</li>
+<li>api and schema publication with automatic OPTIONS support</li>
+<li>best-effort asynchronous events routed to users connected over Socket.io</li>
+<li>WebRTC connection automation between authenticated users</li>
 </ul>
-<p>This module is used to serve your apps locally behind a reverse proxy, to connect to a <a href="https://github.com/shenanigans/node-sublayer">sublayer</a> instance, and can be built into your client
-javascript with <a href="http://browserify.org/">browserify</a>.</p>
+<p>This module is used to to connect to a <a href="https://github.com/shenanigans/node-sublayer">sublayer</a>
+instance or serve your apps locally behind a reverse proxy. It can be built directly into your
+client javascript with <a href="http://browserify.org/">browserify</a>.</p>
 <h4 id="table-of-contents">Table of Contents</h4>
 <p><strong><a href="#getting-started">Getting Started</a></strong></p>
 <ul>
@@ -411,13 +412,96 @@ substation.on (<span class="hljs-string">'userOnline'</span>, <span class="hljs-
     <span class="hljs-comment">// react to the user's overall status</span>
 });
 </code></pre><h3 id="live-connections">Live Connections</h3>
+<p>Each time a new Socket.io connection comes onlilne, the <code>liveConnection</code> event is emitted once. This
+event provides you with an immediate opportunity to emit events on the specific client that just
+connected. Because there is no callback on the client waiting for this reply you can only emit
+events, not send reply content.</p>
+<pre><code class="lang-javascript">substation.on (<span class="hljs-string">'liveConnection'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(agent, reply)</span> </span>{
+    usersCollection.findOne (
+        { _id:agent.user },
+        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, user)</span> </span>{
+            <span class="hljs-keyword">var</span> online = [];
+            async.each (user.friends, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(friend, callback)</span> </span>{
+                substation.isActive (friend, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, isActive)</span> </span>{
+                    <span class="hljs-keyword">if</span> (isActive)
+                        online.push (friend);
+                    callback();
+                });
+            }, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err)</span> </span>{
+                <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; online.length; i++)
+                    reply.event (<span class="hljs-string">'online'</span>, online[i]);
+                reply.done();
+            });
+        }
+    );
+});
+</code></pre>
 <h3 id="peer-requests">Peer Requests</h3>
+<p>When one user requests to connect to another, a <code>peerRequest</code> event is emitted. The event describes
+the query used to select the target user or user/client pair and provides the opportunity to permit
+or deny the connection. When the connection is permitted, the server provides the receiving peer
+with a query describing the initiating peer.</p>
+<pre><code class="lang-javascript">substation.on (
+    <span class="hljs-string">'peerRequest'</span>,
+    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(agent, info, connect)</span> </span>{
+
+        <span class="hljs-comment">// find the "friend" User and authenticate</span>
+        <span class="hljs-comment">// ...</span>
+
+        connect (
+            friend.userID,
+            <span class="hljs-comment">// connect client to client</span>
+            friend.clientID,
+            <span class="hljs-comment">// tell "friend" who "agent" is</span>
+            { email:agent.info.email },
+            <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, sent)</span> </span>{
+                <span class="hljs-comment">// if a message went out</span>
+                <span class="hljs-comment">// `sent` will be `true`</span>
+            }
+        );
+    }
+);
+</code></pre>
 <h2 id="deployment">Deployment</h2>
 <h3 id="remote-service-connector">Remote Service Connector</h3>
 <h3 id="local-deployment">Local Deployment</h3>
 <h2 id="client-library">Client Library</h2>
 <h3 id="actions">Actions</h3>
 <h3 id="peer-to-peer">Peer To Peer</h3>
+<p>WebRTC connections are made semi-automatically. The request is initialized by the client machine and
+produces an event on the server. Listeners on this event may allow the connection to proceed, after
+which remaining SDP and ICE exchange phases are automatic. The &quot;Link&quot; created between two Users or
+Clients will remain active for as long as at least one connection <em>to the server</em> remains active
+from each peer. As long as the Link is active, newly active connections (e.g. the user opens a new
+tab) will automatically join the Link by creating WebRTC connections and DataChannels to every other
+remote peer.</p>
+<p>Multimedia stream handling has been massively streamlined, with renegotiation of the underlying
+connection handled automatically. Streams can be added to or removed from a peer connection at any
+time without disruption. Multimedia streams will be duplicated to every connected Peer on the Link,
+so multimedia applications should consider selecting Peers by Client and disabling streams when not
+in use. Remember that if no Elements on the page refer to the stream no packets will be sent,
+however calling <code>pause()</code> is not sufficient.</p>
+<p>Native WebRTC stream re-negotiation destroys the underlying streams. <code>substation</code> will attempt to
+swap the replacement stream into any <code>&lt;audio</code> and <code>&lt;video&gt;</code> elements on the page and the stream
+should not emit the <code>close</code> event. If you are reading a stream directly, listen to the <code>swap</code> event
+to receive the new native stream instance.</p>
+<p>On the client:</p>
+<pre><code class="lang-javascript"><span class="hljs-comment">// get our home server</span>
+<span class="hljs-keyword">var</span> server = substation.getServer();
+<span class="hljs-comment">// get and connect a peer</span>
+<span class="hljs-keyword">var</span> peer = server.getPeer (
+    { email:<span class="hljs-string">'name@url.tld'</span> }
+);
+peer.connect (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err)</span> </span>{
+    <span class="hljs-keyword">if</span> (err) {
+        <span class="hljs-built_in">console</span>.log (<span class="hljs-string">'peer connection failed'</span>, err);
+        <span class="hljs-keyword">return</span>;
+    }
+    <span class="hljs-built_in">console</span>.log (<span class="hljs-string">'peer connection succeeded'</span>);
+    <span class="hljs-comment">// emit an event on the remote client</span>
+    peer.emit (<span class="hljs-string">'connected'</span>, { id:<span class="hljs-string">'12345'</span> });
+});
+</code></pre>
 <h3 id="events">Events</h3>
 <p>Emitting an event on a client device is very easy, even if they haven&#39;t used an Action recently. You
 may target events to all active connections of a user ID or user/client ID pair.</p>
@@ -464,66 +548,6 @@ substation.on (<span class="hljs-string">'clientOffline'</span>, <span class="hl
 <p>A small note: if you were smashing &quot;refresh&quot; on your test application and now your Users and Clients
 appear to be stuck online, wait ten seconds for Socket.io connections which failed in the
 polling/upgrade phase to timeout.</p>
-<h3 id="webrtc">WebRTC</h3>
-<p>WebRTC connections are made semi-automatically. The request is initialized by the client machine and
-produces an event on the server. Listeners on this event may allow the connection to proceed, after
-which remaining SDP and ICE exchange phases are automatic. The &quot;Link&quot; created between two Users or
-Clients will remain active for as long as at least one connection <em>to the server</em> remains active
-from each peer. As long as the Link is active, newly active connections (e.g. the user opens a new
-tab) will automatically join the Link by creating WebRTC connections and DataChannels to every other
-remote peer.</p>
-<p>Multimedia stream handling has been massively streamlined, with renegotiation of the underlying
-connection handled automatically. Streams can be added to or removed from a peer connection at any
-time without disruption. Multimedia streams will be duplicated to every connected Peer on the Link,
-so multimedia applications should consider selecting Peers by Client and disabling streams when not
-in use. Remember that if no Elements on the page refer to the stream no packets will be sent,
-however calling <code>pause()</code> is not sufficient.</p>
-<p>Due to the insanity that is WebRTC, Some stream renegotiation phases would normally disrupt your
-existing streams, replacing them with duplicates. In these cases, <code>substation</code> will attempt to swap
-the replacement stream into any <code>&lt;video&gt;</code> elements on the page and the stream should not emit the
-<code>close</code> event. Unfortunately, the &quot;unique id&quot; set to incoming streams in most browsers today is
-always &quot;default&quot; which complicates multiplexing somewhat. If you wish to use multiple streams per
-client, they must be <strong>either</strong> differentiable by introspection, i.e. one audio one video, different
-bitrates, etc. <strong>or</strong> only add or remove all streams simultaneously.</p>
-<p>On the client:</p>
-<pre><code class="lang-javascript"><span class="hljs-comment">// get our home server</span>
-<span class="hljs-keyword">var</span> server = substation.getServer();
-<span class="hljs-comment">// get and connect a peer</span>
-<span class="hljs-keyword">var</span> peer = server.getPeer (
-    { email:<span class="hljs-string">'name@url.tld'</span> }
-);
-peer.connect (<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err)</span> </span>{
-    <span class="hljs-keyword">if</span> (err) {
-        <span class="hljs-built_in">console</span>.log (<span class="hljs-string">'peer connection failed'</span>, err);
-        <span class="hljs-keyword">return</span>;
-    }
-    <span class="hljs-built_in">console</span>.log (<span class="hljs-string">'peer connection succeeded'</span>);
-    <span class="hljs-comment">// emit an event on the remote client</span>
-    peer.emit (<span class="hljs-string">'connected'</span>, { id:<span class="hljs-string">'12345'</span> });
-});
-</code></pre>
-<p>On the server:</p>
-<pre><code class="lang-javascript">substation.on (
-    <span class="hljs-string">'peerRequest'</span>,
-    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(agent, info, connect)</span> </span>{
-
-        <span class="hljs-comment">// find the "friend" User and authenticate</span>
-        <span class="hljs-comment">// ...</span>
-
-        connect (
-            friend.userID,
-            <span class="hljs-comment">// connect client to client</span>
-            friend.clientID,
-            <span class="hljs-comment">// tell "friend" who "agent" is</span>
-            { email:agent.info.email },
-            <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(err, sent)</span> </span>{
-                <span class="hljs-comment">// if a message went out</span>
-                <span class="hljs-comment">// `sent` will be `true`</span>
-            }
-        );
-    }
-);
-</code></pre>
 <h2 id="license">LICENSE</h2>
 <p>The MIT License (MIT)</p>
 <p>Copyright (c) 2015 Kevin &quot;Schmidty&quot; Smith</p>
@@ -552,7 +576,7 @@ SOFTWARE.</p>
     <div id="footer">
         This document was generated with
         <a href="https://github.com/shenanigans/node-doczar">doczar</a>
-        at <span class="time">4:47pm</span> on <span class="date">8/11/2015</span>
+        at <span class="time">3:55pm</span> on <span class="date">8/14/2015</span>
     </div>
 </body>
 </html>
