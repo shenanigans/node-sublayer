@@ -33,7 +33,7 @@ require ('client');
             </div>
             {{#if Authentication.isLoggedIn}}
                 <form id="Auth" action="/logout" method="GET">
-                    <a href="settings"><img src="static/gear.png" /></a><input type="submit" value="log out" />
+                    <a href="/accountSettings"><img src="static/gear.png" /></a><input type="submit" value="log out" />
                 </form>
             {{else}}
                 <div id="Auth">

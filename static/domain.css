@@ -125,11 +125,11 @@ p {
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: rgba(214, 211, 211, 0.93);
+    background-color: rgba(39, 39, 39, 0.93);
     cursor: pointer;
     font-size: 300%;
-    color: #7D1616;
-    text-shadow: 0 0 0.3em #310505;
+    color: #FF0000;
+    text-shadow: 0 0 0.4em #5D0202;
     text-align: center;
 }
 
