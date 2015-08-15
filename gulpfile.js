@@ -22,6 +22,23 @@ ControlPanelBundler.require ('substation');
 ControlPanelBundler.require ('./ControlPanel.js', { expose:'client' });
 ControlPanelBundler.on ('update', bundleControlPanel);
 
+var RootBundler;
+function bundleRoot(){
+     var stream = RootBundler
+      .bundle()
+      .on('error', gutil.log.bind (gutil, 'Browserify Error'))
+      .pipe (source('Root.js'))
+      .pipe (gulp.dest('./static/'))
+      ;
+     stream.on ('end', function(){ gutil.log (gutil.colors.cyan ('built Root')); });
+     return stream;
+}
+
+RootBundler = watchify (browserify({ cache: {}, packageCache: {} }));
+RootBundler.require ('substation');
+RootBundler.require ('./Root.js', { expose:'client' });
+RootBundler.on ('update', bundleRoot);
+
 var NotificationBundler;
 function bundleNotification(){
      var stream = NotificationBundler
@@ -56,5 +73,6 @@ DomainBundler.on ('update', bundleDomain);
 
 gulp.task ('ControlPanel', bundleControlPanel);
 gulp.task ('Notification', bundleNotification);
+gulp.task ('Root', bundleRoot);
 gulp.task ('Domain', bundleDomain);
-gulp.task ('default', [ 'ControlPanel', 'Notification', 'Domain' ]);
+gulp.task ('default', [ 'ControlPanel', 'Notification', 'Root', 'Domain' ]);

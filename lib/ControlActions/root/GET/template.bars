@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     {{#if Authentication.isLoggedIn}}
-    <script type="text/javascript">
-        if (!window.location.hash) {
-            window.location.hash = '#Notifications';
-        } else if (window.chrome) {
-            // Chrome has never handled hash URLs correctly
-            var hash = window.location.hash.slice (1);
-            window.location.hash = "";
-            window.location.hash = hash;
-        }
-    </script>
-    <script type="text/javascript" src="static/ControlPanel.js"></script>
-    <script type="text/javascript">
-require ('client');
-    </script>
+        <script type="text/javascript">
+            if (!window.location.hash) {
+                window.location.hash = '#Notifications';
+            } else if (window.chrome) {
+                // Chrome has never handled hash URLs correctly
+                var hash = window.location.hash.slice (1);
+                window.location.hash = "";
+                window.location.hash = hash;
+            }
+        </script>
+        <script type="text/javascript" src="static/ControlPanel.js"></script>
+    {{else}}
+        <script type="text/javascript" src="static/Root.js"></script>
     {{/if}}
+    <script type="text/javascript">
+        require ('client');
+    </script>
     <title>Sublayer.io</title>
     <link rel="icon" href="static/favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
@@ -140,6 +143,8 @@ require ('client');
             </div>
         </div>
     {{else}}
+        <div id="BubbleField"></div>
+        <div id="BubbleSides"></div>
         <div class="subheader">Do <span class="buzzword">realtime</span> and <span class="buzzword">peer-to-peer</span> <div class="chunk">the easy way.</div></div>
         <div id="Features">
             <div id="Session Management" class="feature">

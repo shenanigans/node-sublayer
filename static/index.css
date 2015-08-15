@@ -1,7 +1,56 @@
 
 body {
-    margin-top: 30em;
+    margin-top: 25em;
     padding-top: 1.75em;
+}
+
+#BubbleField {
+    position: fixed;
+    top: 5em;
+    right: 0;
+    left: 0;
+    height: 25em;
+    z-index: -1;
+}
+
+#BubbleSides {
+    position: fixed;
+    top: 30em;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.bubble {
+    position: absolute;
+    transition: opacity 0.5s ease-out;
+    padding: 0.3em 0.7em 0.2em;
+    font-size: 120%;
+    background-color: #FF24DF;
+    border-radius: 0.3em;
+    color: #fff;
+    box-shadow: 0 0 1em rgb(138, 16, 120);
+    opacity: 0;
+}
+
+.bubble.visible {
+    opacity: 1;
+}
+
+.bubble:before {
+  content:"";
+  position:absolute;
+  bottom: -.6em; /* value = - border-top-width - border-bottom-width */
+  left: 10px; /* controls horizontal position */
+  border:0;
+  border-right-width: .6em; /* vary this value to change the angle of the vertex */
+  border-bottom-width: 0.7em; /* vary this value to change the height of the triangle. must be equal to the corresponding value in :after */
+  border-style:solid;
+  border-color:transparent #FF24DF;
+  /* reduce the damage in FF3.0 */
+  display:block;
+  width:0;
 }
 
 .subheader {

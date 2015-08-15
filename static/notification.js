@@ -27,31 +27,35 @@ var rootParent = {}
  * Browsers that support typed arrays are IE 10+, Firefox 4+, Chrome 7+, Safari 5.1+,
  * Opera 11.6+, iOS 4.2+.
  *
+ * Due to various browser bugs, sometimes the Object implementation will be used even
+ * when the browser supports typed arrays.
+ *
  * Note:
  *
- * - Implementation must support adding new properties to `Uint8Array` instances.
- *   Firefox 4-29 lacked support, fixed in Firefox 30+.
- *   See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
+ *   - Firefox 4-29 lacks support for adding new properties to `Uint8Array` instances,
+ *     See: https://bugzilla.mozilla.org/show_bug.cgi?id=695438.
  *
- *  - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
+ *   - Safari 5-7 lacks support for changing the `Object.prototype.constructor` property
+ *     on objects.
  *
- *  - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
- *    incorrect length in some situations.
+ *   - Chrome 9-10 is missing the `TypedArray.prototype.subarray` function.
  *
- * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they will
- * get the Object implementation, which is slower but will work correctly.
+ *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
+ *     incorrect length in some situations.
+
+ * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
+ * get the Object implementation, which is slower but behaves correctly.
  */
 Buffer.TYPED_ARRAY_SUPPORT = (function () {
-  function Foo () {}
+  function Bar () {}
   try {
-    var buf = new ArrayBuffer(0)
-    var arr = new Uint8Array(buf)
+    var arr = new Uint8Array(1)
     arr.foo = function () { return 42 }
-    arr.constructor = Foo
+    arr.constructor = Bar
     return arr.foo() === 42 && // typed array instances can be augmented
-        arr.constructor === Foo && // constructor can be set
+        arr.constructor === Bar && // constructor can be set
         typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
-        new Uint8Array(1).subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
+        arr.subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
   } catch (e) {
     return false
   }
@@ -129,8 +133,13 @@ function fromObject (that, object) {
     throw new TypeError('must start with number, buffer, array or string')
   }
 
-  if (typeof ArrayBuffer !== 'undefined' && object.buffer instanceof ArrayBuffer) {
-    return fromTypedArray(that, object)
+  if (typeof ArrayBuffer !== 'undefined') {
+    if (object.buffer instanceof ArrayBuffer) {
+      return fromTypedArray(that, object)
+    }
+    if (object instanceof ArrayBuffer) {
+      return fromArrayBuffer(that, object)
+    }
   }
 
   if (object.length) return fromArrayLike(that, object)
@@ -163,6 +172,18 @@ function fromTypedArray (that, array) {
   // of the old Buffer constructor.
   for (var i = 0; i < length; i += 1) {
     that[i] = array[i] & 255
+  }
+  return that
+}
+
+function fromArrayBuffer (that, array) {
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    array.byteLength
+    that = Buffer._augment(new Uint8Array(array))
+  } else {
+    // Fallback: Return an object instance of the Buffer class
+    that = fromTypedArray(that, new Uint8Array(array))
   }
   return that
 }
@@ -284,8 +305,6 @@ Buffer.concat = function concat (list, length) {
 
   if (list.length === 0) {
     return new Buffer(0)
-  } else if (list.length === 1) {
-    return list[0]
   }
 
   var i
@@ -460,13 +479,13 @@ Buffer.prototype.indexOf = function indexOf (val, byteOffset) {
   throw new TypeError('val must be string, number or Buffer')
 }
 
-// `get` will be removed in Node 0.13+
+// `get` is deprecated
 Buffer.prototype.get = function get (offset) {
   console.log('.get() is deprecated. Access using array indexes instead.')
   return this.readUInt8(offset)
 }
 
-// `set` will be removed in Node 0.13+
+// `set` is deprecated
 Buffer.prototype.set = function set (v, offset) {
   console.log('.set() is deprecated. Access using array indexes instead.')
   return this.writeUInt8(v, offset)
@@ -1155,9 +1174,16 @@ Buffer.prototype.copy = function copy (target, targetStart, start, end) {
   }
 
   var len = end - start
+  var i
 
-  if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
-    for (var i = 0; i < len; i++) {
+  if (this === target && start < targetStart && targetStart < end) {
+    // descending copy from end
+    for (i = len - 1; i >= 0; i--) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
+    // ascending copy from start
+    for (i = 0; i < len; i++) {
       target[i + targetStart] = this[i + start]
     }
   } else {
@@ -1233,7 +1259,7 @@ Buffer._augment = function _augment (arr) {
   // save reference to original Uint8Array set method before overwriting
   arr._set = arr.set
 
-  // deprecated, will be removed in node 0.13+
+  // deprecated
   arr.get = BP.get
   arr.set = BP.set
 
@@ -1289,7 +1315,7 @@ Buffer._augment = function _augment (arr) {
   return arr
 }
 
-var INVALID_BASE64_RE = /[^+\/0-9A-z\-]/g
+var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
 
 function base64clean (str) {
   // Node strips out invalid characters like \n and \t from the string, base64-js does not
@@ -22831,7 +22857,7 @@ Server.prototype.sendPeerMessage = function (msg) {
 module.exports = Server;
 
 }).call(this,require('_process'))
-},{"./Peer":167,"./inherit":169,"_process":9,"buffer":2,"events":6,"filth":227,"http-browserify":171,"socket.io-client":176,"url":29}],169:[function(require,module,exports){
+},{"./Peer":167,"./inherit":169,"_process":9,"buffer":2,"events":6,"filth":171,"http-browserify":172,"socket.io-client":177,"url":29}],169:[function(require,module,exports){
 
 function inherit (child, parent) {
     var dummy = function(){};
@@ -23975,6 +24001,185 @@ module.exports = inherit;
 
 }).call(this,require('_process'))
 },{"_process":9}],171:[function(require,module,exports){
+(function (Buffer){
+
+/**     @module filth
+    Simple utility methods.
+*/
+module.exports.getTypeStr   = getTypeStr;
+module.exports.clone        = clone;
+module.exports.merge        = merge;
+module.exports.inherit      = inherit;
+module.exports.compare      = compare;
+
+
+/**     @property/Function getTypeStr
+    Gets a proper type name for a reference, in all lowercase.
+@argument obj
+*/
+var typeGetter = ({}).toString;
+// browser safing
+var buff;
+try { buff = Buffer; } catch (err) { buff = {}; }
+function getTypeStr (obj) {
+    var tstr = typeGetter.apply(obj).slice(8,-1).toLowerCase();
+    if (tstr == 'object' && obj instanceof Buffer) return 'buffer';
+    return tstr;
+}
+
+
+/**     @property/Function clone
+    Create a JSON-identical duplicate of a reference with no refs in common.
+@argument obj
+*/
+function clone (target) {
+    var objType = getTypeStr (target);
+    switch (objType) {
+        case 'function':
+            throw new Error ('cannot clone Functions');
+        case 'undefined':
+            return undefined;
+        case 'number':
+            return Number (target); // otherwise you get heap Numbers instead of natives... it's weird.
+        case 'string':
+            return String (target); // otherwise you get heap Strings instead of natives... it's weird.
+        case 'boolean':
+            return Boolean (target); // otherwise you get heap Strings instead of natives... it's weird.
+        case 'array':
+            return target.slice().map(clone);
+        case 'object':
+            var newObj = {};
+            var keys = Object.keys(target);
+            for (var i=0,j=keys.length; i<j; i++)
+                newObj[keys[i]] = clone (target[keys[i]]);
+            return newObj;
+        default:
+            throw new Error ('cannot clone type "'+objType+'"');
+    }
+}
+
+
+/**     @property/Function merge
+    Overwrite properties on an object with those of another object, recursing into Objects and
+    Arrays.
+@argument obj
+*/
+function merge (target, source) {
+    var keys = Object.keys (source);
+    for (var i=0,j=keys.length; i<j; i++) {
+        var key = keys[i];
+        var val = source[key];
+        if (!Object.hasOwnProperty.call (target, key)) {
+            target[key] = val;
+            continue;
+        }
+        var type = getTypeStr (val);
+        if (type != getTypeStr (target[key])) {
+            target[key] = val;
+            continue;
+        }
+        if (type == 'object')
+            merge (target[key], val);
+        else if (type == 'array')
+            mergeArray (target[key], val);
+        else
+            target[key] = val;
+    }
+}
+
+function mergeArray (target, source) {
+    for (var i=0,j=source.length; i<j; i++) {
+        var val = source[i];
+        if (i > target.length) {
+            target[i] = val;
+            continue;
+        }
+        var type = getTypeStr (val);
+        if (type != getTypeStr (target[i])) {
+            target[i] = val;
+            continue;
+        }
+        if (type == 'object')
+            merge (target[i], val);
+        else if (type == 'array')
+            mergeArray (target[i], val);
+        else
+            target[i] = val;
+    }
+}
+
+
+/**     @property/Function inherit
+    Perform a simple prototype inheritence operation to cause the first argument to inherit from the
+    last.
+*/
+function inherit (child, parent) {
+    var dummy = function(){};
+    dummy.prototype = parent.prototype;
+    dummy = new dummy();
+    var keys = Object.keys (child.prototype);
+    for (var i=0,j=keys.length; i<j; i++) {
+        var key = keys[i];
+        dummy[key] = child.prototype[key];
+    }
+    child.prototype = dummy;
+}
+
+
+/**     @property/Function compare
+
+*/
+function compare (objA, objB) {
+    var keys = Object.keys (objA);
+    for (var i=0,j=keys.length; i<j; i++) {
+        var key = keys[i];
+        if (!Object.hasOwnProperty.call (objB, key))
+            return false;
+        var itemA = objA[key];
+        var itemB = objB[key];
+        var aType = getTypeStr (itemA);
+        var bType = getTypeStr (itemB);
+        if (aType != bType) return false;
+        if (aType == 'object')
+            if (compare (itemA, itemB))
+                continue;
+            else
+                return false;
+        if (aType == 'array')
+            if (itemA.length != itemB.length || compareArrays (itemA, itemB))
+                return false;
+            else
+                continue;
+        if (itemA !== itemB)
+            return false;
+    }
+    return true;
+}
+
+function compareArrays (arrA, arrB) {
+    for (var i=0,j=arrA.length; i<j; i++) {
+        var itemA = arrA[i];
+        var itemB = arrB[i];
+        var aType = getTypeStr (itemA);
+        var bType = getTypeStr (itemB);
+        if (aType != bType) return false;
+        if (aType == 'object')
+            if (compare (itemA, itemB))
+                continue;
+            else
+                return false;
+        if (aType == 'array')
+            if (itemA.length != itemB.length || compareArrays (itemA, itemB))
+                return false;
+            else
+                continue;
+        if (itemA !== itemB)
+            return false;
+    }
+}
+
+}).call(this,require("buffer").Buffer)
+},{"buffer":2}],172:[function(require,module,exports){
 var http = module.exports;
 var EventEmitter = require('events').EventEmitter;
 var Request = require('./lib/request');
@@ -24120,7 +24325,7 @@ http.STATUS_CODES = {
     510 : 'Not Extended',               // RFC 2774
     511 : 'Network Authentication Required' // RFC 6585
 };
-},{"./lib/request":172,"events":6,"url":29}],172:[function(require,module,exports){
+},{"./lib/request":173,"events":6,"url":29}],173:[function(require,module,exports){
 var Stream = require('stream');
 var Response = require('./response');
 var Base64 = require('Base64');
@@ -24331,7 +24536,7 @@ var isXHR2Compatible = function (obj) {
     if (typeof FormData !== 'undefined' && obj instanceof FormData) return true;
 };
 
-},{"./response":173,"Base64":174,"inherits":175,"stream":27}],173:[function(require,module,exports){
+},{"./response":174,"Base64":175,"inherits":176,"stream":27}],174:[function(require,module,exports){
 var Stream = require('stream');
 var util = require('util');
 
@@ -24454,7 +24659,7 @@ var isArray = Array.isArray || function (xs) {
     return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{"stream":27,"util":31}],174:[function(require,module,exports){
+},{"stream":27,"util":31}],175:[function(require,module,exports){
 ;(function () {
 
   var object = typeof exports != 'undefined' ? exports : this; // #8: web workers
@@ -24516,13 +24721,13 @@ var isArray = Array.isArray || function (xs) {
 
 }());
 
-},{}],175:[function(require,module,exports){
+},{}],176:[function(require,module,exports){
 arguments[4][7][0].apply(exports,arguments)
-},{"dup":7}],176:[function(require,module,exports){
+},{"dup":7}],177:[function(require,module,exports){
 
 module.exports = require('./lib/');
 
-},{"./lib/":177}],177:[function(require,module,exports){
+},{"./lib/":178}],178:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -24611,7 +24816,7 @@ exports.connect = lookup;
 exports.Manager = require('./manager');
 exports.Socket = require('./socket');
 
-},{"./manager":178,"./socket":180,"./url":181,"debug":185,"socket.io-parser":221}],178:[function(require,module,exports){
+},{"./manager":179,"./socket":181,"./url":182,"debug":186,"socket.io-parser":222}],179:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -25116,7 +25321,7 @@ Manager.prototype.onreconnect = function(){
   this.emitAll('reconnect', attempt);
 };
 
-},{"./on":179,"./socket":180,"./url":181,"backo2":182,"component-bind":183,"component-emitter":184,"debug":185,"engine.io-client":186,"indexof":217,"object-component":218,"socket.io-parser":221}],179:[function(require,module,exports){
+},{"./on":180,"./socket":181,"./url":182,"backo2":183,"component-bind":184,"component-emitter":185,"debug":186,"engine.io-client":187,"indexof":218,"object-component":219,"socket.io-parser":222}],180:[function(require,module,exports){
 
 /**
  * Module exports.
@@ -25142,7 +25347,7 @@ function on(obj, ev, fn) {
   };
 }
 
-},{}],180:[function(require,module,exports){
+},{}],181:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -25529,7 +25734,7 @@ Socket.prototype.disconnect = function(){
   return this;
 };
 
-},{"./on":179,"component-bind":183,"component-emitter":184,"debug":185,"has-binary":215,"socket.io-parser":221,"to-array":225}],181:[function(require,module,exports){
+},{"./on":180,"component-bind":184,"component-emitter":185,"debug":186,"has-binary":216,"socket.io-parser":222,"to-array":226}],182:[function(require,module,exports){
 (function (global){
 
 /**
@@ -25606,7 +25811,7 @@ function url(uri, loc){
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"debug":185,"parseuri":219}],182:[function(require,module,exports){
+},{"debug":186,"parseuri":220}],183:[function(require,module,exports){
 
 /**
  * Expose `Backoff`.
@@ -25693,7 +25898,7 @@ Backoff.prototype.setJitter = function(jitter){
 };
 
 
-},{}],183:[function(require,module,exports){
+},{}],184:[function(require,module,exports){
 /**
  * Slice reference.
  */
@@ -25718,7 +25923,7 @@ module.exports = function(obj, fn){
   }
 };
 
-},{}],184:[function(require,module,exports){
+},{}],185:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -25884,7 +26089,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],185:[function(require,module,exports){
+},{}],186:[function(require,module,exports){
 
 /**
  * Expose `debug()` as the module.
@@ -26023,11 +26228,11 @@ try {
   if (window.localStorage) debug.enable(localStorage.debug);
 } catch(e){}
 
-},{}],186:[function(require,module,exports){
+},{}],187:[function(require,module,exports){
 
 module.exports =  require('./lib/');
 
-},{"./lib/":187}],187:[function(require,module,exports){
+},{"./lib/":188}],188:[function(require,module,exports){
 
 module.exports = require('./socket');
 
@@ -26039,7 +26244,7 @@ module.exports = require('./socket');
  */
 module.exports.parser = require('engine.io-parser');
 
-},{"./socket":188,"engine.io-parser":200}],188:[function(require,module,exports){
+},{"./socket":189,"engine.io-parser":201}],189:[function(require,module,exports){
 (function (global){
 /**
  * Module dependencies.
@@ -26748,7 +26953,7 @@ Socket.prototype.filterUpgrades = function (upgrades) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./transport":189,"./transports":190,"component-emitter":184,"debug":197,"engine.io-parser":200,"indexof":217,"parsejson":211,"parseqs":212,"parseuri":213}],189:[function(require,module,exports){
+},{"./transport":190,"./transports":191,"component-emitter":185,"debug":198,"engine.io-parser":201,"indexof":218,"parsejson":212,"parseqs":213,"parseuri":214}],190:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -26909,7 +27114,7 @@ Transport.prototype.onClose = function () {
   this.emit('close');
 };
 
-},{"component-emitter":184,"engine.io-parser":200}],190:[function(require,module,exports){
+},{"component-emitter":185,"engine.io-parser":201}],191:[function(require,module,exports){
 (function (global){
 /**
  * Module dependencies
@@ -26966,7 +27171,7 @@ function polling(opts){
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./polling-jsonp":191,"./polling-xhr":192,"./websocket":194,"xmlhttprequest":195}],191:[function(require,module,exports){
+},{"./polling-jsonp":192,"./polling-xhr":193,"./websocket":195,"xmlhttprequest":196}],192:[function(require,module,exports){
 (function (global){
 
 /**
@@ -27203,7 +27408,7 @@ JSONPPolling.prototype.doWrite = function (data, fn) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./polling":193,"component-inherit":196}],192:[function(require,module,exports){
+},{"./polling":194,"component-inherit":197}],193:[function(require,module,exports){
 (function (global){
 /**
  * Module requirements.
@@ -27591,7 +27796,7 @@ function unloadHandler() {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./polling":193,"component-emitter":184,"component-inherit":196,"debug":197,"xmlhttprequest":195}],193:[function(require,module,exports){
+},{"./polling":194,"component-emitter":185,"component-inherit":197,"debug":198,"xmlhttprequest":196}],194:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -27838,7 +28043,7 @@ Polling.prototype.uri = function(){
   return schema + '://' + this.hostname + port + this.path + query;
 };
 
-},{"../transport":189,"component-inherit":196,"debug":197,"engine.io-parser":200,"parseqs":212,"xmlhttprequest":195}],194:[function(require,module,exports){
+},{"../transport":190,"component-inherit":197,"debug":198,"engine.io-parser":201,"parseqs":213,"xmlhttprequest":196}],195:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -28078,7 +28283,7 @@ WS.prototype.check = function(){
   return !!WebSocket && !('__initialize' in WebSocket && this.name === WS.prototype.name);
 };
 
-},{"../transport":189,"component-inherit":196,"debug":197,"engine.io-parser":200,"parseqs":212,"ws":214}],195:[function(require,module,exports){
+},{"../transport":190,"component-inherit":197,"debug":198,"engine.io-parser":201,"parseqs":213,"ws":215}],196:[function(require,module,exports){
 // browser shim for xmlhttprequest module
 var hasCORS = require('has-cors');
 
@@ -28116,7 +28321,7 @@ module.exports = function(opts) {
   }
 }
 
-},{"has-cors":209}],196:[function(require,module,exports){
+},{"has-cors":210}],197:[function(require,module,exports){
 
 module.exports = function(a, b){
   var fn = function(){};
@@ -28124,7 +28329,7 @@ module.exports = function(a, b){
   a.prototype = new fn;
   a.prototype.constructor = a;
 };
-},{}],197:[function(require,module,exports){
+},{}],198:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -28273,7 +28478,7 @@ function load() {
 
 exports.enable(load());
 
-},{"./debug":198}],198:[function(require,module,exports){
+},{"./debug":199}],199:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -28472,7 +28677,7 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":199}],199:[function(require,module,exports){
+},{"ms":200}],200:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -28585,7 +28790,7 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],200:[function(require,module,exports){
+},{}],201:[function(require,module,exports){
 (function (global){
 /**
  * Module dependencies.
@@ -29183,7 +29388,7 @@ exports.decodePayloadAsBinary = function (data, binaryType, callback) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./keys":201,"after":202,"arraybuffer.slice":203,"base64-arraybuffer":204,"blob":205,"has-binary":206,"utf8":208}],201:[function(require,module,exports){
+},{"./keys":202,"after":203,"arraybuffer.slice":204,"base64-arraybuffer":205,"blob":206,"has-binary":207,"utf8":209}],202:[function(require,module,exports){
 
 /**
  * Gets the keys for an object.
@@ -29204,7 +29409,7 @@ module.exports = Object.keys || function keys (obj){
   return arr;
 };
 
-},{}],202:[function(require,module,exports){
+},{}],203:[function(require,module,exports){
 module.exports = after
 
 function after(count, callback, err_cb) {
@@ -29234,7 +29439,7 @@ function after(count, callback, err_cb) {
 
 function noop() {}
 
-},{}],203:[function(require,module,exports){
+},{}],204:[function(require,module,exports){
 /**
  * An abstraction for slicing an arraybuffer even when
  * ArrayBuffer.prototype.slice is not supported
@@ -29265,7 +29470,7 @@ module.exports = function(arraybuffer, start, end) {
   return result.buffer;
 };
 
-},{}],204:[function(require,module,exports){
+},{}],205:[function(require,module,exports){
 /*
  * base64-arraybuffer
  * https://github.com/niklasvh/base64-arraybuffer
@@ -29326,7 +29531,7 @@ module.exports = function(arraybuffer, start, end) {
   };
 })("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 
-},{}],205:[function(require,module,exports){
+},{}],206:[function(require,module,exports){
 (function (global){
 /**
  * Create a blob builder even when vendor prefixes exist
@@ -29379,7 +29584,7 @@ module.exports = (function() {
 })();
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],206:[function(require,module,exports){
+},{}],207:[function(require,module,exports){
 (function (global){
 
 /*
@@ -29441,9 +29646,9 @@ function hasBinary(data) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"isarray":207}],207:[function(require,module,exports){
+},{"isarray":208}],208:[function(require,module,exports){
 arguments[4][8][0].apply(exports,arguments)
-},{"dup":8}],208:[function(require,module,exports){
+},{"dup":8}],209:[function(require,module,exports){
 (function (global){
 /*! http://mths.be/utf8js v2.0.0 by @mathias */
 ;(function(root) {
@@ -29686,7 +29891,7 @@ arguments[4][8][0].apply(exports,arguments)
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],209:[function(require,module,exports){
+},{}],210:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -29711,7 +29916,7 @@ try {
   module.exports = false;
 }
 
-},{"global":210}],210:[function(require,module,exports){
+},{"global":211}],211:[function(require,module,exports){
 
 /**
  * Returns `this`. Execute this without a "context" (i.e. without it being
@@ -29721,7 +29926,7 @@ try {
 
 module.exports = (function () { return this; })();
 
-},{}],211:[function(require,module,exports){
+},{}],212:[function(require,module,exports){
 (function (global){
 /**
  * JSON parse.
@@ -29756,7 +29961,7 @@ module.exports = function parsejson(data) {
   }
 };
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],212:[function(require,module,exports){
+},{}],213:[function(require,module,exports){
 /**
  * Compiles a querystring
  * Returns string representation of the object
@@ -29795,7 +30000,7 @@ exports.decode = function(qs){
   return qry;
 };
 
-},{}],213:[function(require,module,exports){
+},{}],214:[function(require,module,exports){
 /**
  * Parses an URI
  *
@@ -29836,7 +30041,7 @@ module.exports = function parseuri(str) {
     return uri;
 };
 
-},{}],214:[function(require,module,exports){
+},{}],215:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -29881,7 +30086,7 @@ function ws(uri, protocols, opts) {
 
 if (WebSocket) ws.prototype = WebSocket.prototype;
 
-},{}],215:[function(require,module,exports){
+},{}],216:[function(require,module,exports){
 (function (global){
 
 /*
@@ -29943,9 +30148,9 @@ function hasBinary(data) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"isarray":216}],216:[function(require,module,exports){
+},{"isarray":217}],217:[function(require,module,exports){
 arguments[4][8][0].apply(exports,arguments)
-},{"dup":8}],217:[function(require,module,exports){
+},{"dup":8}],218:[function(require,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -29956,7 +30161,7 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],218:[function(require,module,exports){
+},{}],219:[function(require,module,exports){
 
 /**
  * HOP ref.
@@ -30041,7 +30246,7 @@ exports.length = function(obj){
 exports.isEmpty = function(obj){
   return 0 == exports.length(obj);
 };
-},{}],219:[function(require,module,exports){
+},{}],220:[function(require,module,exports){
 /**
  * Parses an URI
  *
@@ -30068,7 +30273,7 @@ module.exports = function parseuri(str) {
   return uri;
 };
 
-},{}],220:[function(require,module,exports){
+},{}],221:[function(require,module,exports){
 (function (global){
 /*global Blob,File*/
 
@@ -30213,7 +30418,7 @@ exports.removeBlobs = function(data, callback) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./is-buffer":222,"isarray":223}],221:[function(require,module,exports){
+},{"./is-buffer":223,"isarray":224}],222:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -30615,7 +30820,7 @@ function error(data){
   };
 }
 
-},{"./binary":220,"./is-buffer":222,"component-emitter":184,"debug":185,"isarray":223,"json3":224}],222:[function(require,module,exports){
+},{"./binary":221,"./is-buffer":223,"component-emitter":185,"debug":186,"isarray":224,"json3":225}],223:[function(require,module,exports){
 (function (global){
 
 module.exports = isBuf;
@@ -30632,9 +30837,9 @@ function isBuf(obj) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],223:[function(require,module,exports){
+},{}],224:[function(require,module,exports){
 arguments[4][8][0].apply(exports,arguments)
-},{"dup":8}],224:[function(require,module,exports){
+},{"dup":8}],225:[function(require,module,exports){
 /*! JSON v3.2.6 | http://bestiejs.github.io/json3 | Copyright 2012-2013, Kit Cambridge | http://kit.mit-license.org */
 ;(function (window) {
   // Convenience aliases.
@@ -31497,7 +31702,7 @@ arguments[4][8][0].apply(exports,arguments)
   }
 }(this));
 
-},{}],225:[function(require,module,exports){
+},{}],226:[function(require,module,exports){
 module.exports = toArray
 
 function toArray(list, index) {
@@ -31512,281 +31717,7 @@ function toArray(list, index) {
     return array
 }
 
-},{}],226:[function(require,module,exports){
-(function (process){
-
-/**     @module/class filth.Lock
-    An asynchronous lock that holds your callback in a queue until the locak is available.
-    Optionally provides setup and/or takedown functions and a timeout that releases the lock (and
-    calls any takedown function) if it is not freed.
-@argument/Number timeout
-    @optional
-@argument/Function setup
-@argument/Function takedown
-@member/Boolean isTaken
-@member/Array[Function] queue
-    @private
-*/
-function Lock (/* timeout, setup, takedown */) {
-    var timeout, setup, takedown;
-    if (typeof arguments[0] == 'number') {
-        timeout = arguments[0];
-        setup = arguments[1];
-        takedown = arguments[2];
-    } else {
-        setup = arguments[0];
-        takedown = arguments[1];
-    }
-
-    this.timeout = timeout;
-    this.setup = setup;
-    this.takedown = takedown;
-    this.isTaken = false;
-    this.queue = [];
-}
-module.exports = Lock;
-
-/**     @member/Function @Lock#acquire
-
-@callback
-*/
-Lock.prototype.acquire = function (callback) {
-    if (this.isTaken) {
-        this.queue.push (callback);
-        return;
-    }
-    this.isTaken = true;
-
-    var self = this;
-    function startJob (job) {
-        var stillAlive = true;
-        var watchdog;
-        if (self.timeout)
-            watchdog = setTimeout (function(){
-                cleanup();
-            }, self.timeout);
-        function cleanup (err) {
-            if (!stillAlive) return;
-            stillAlive = false;
-
-            var job;
-            if (self.timeout)
-                clearTimeout (watchdog);
-            if (self.takedown) {
-                self.takedown (err, function(){
-                    job = self.queue.shift();
-                    if (!job)
-                        self.isTaken = false;
-                    else
-                        startJob (job);
-                });
-                return;
-            }
-            job = self.queue.shift();
-            if (!job)
-                self.isTaken = false;
-            else
-                startJob (job);
-        }
-
-        if (self.timeout)
-            watchdog = setTimeout (function(){
-                cleanup();
-            }, self.timeout);
-
-        if (self.setup)
-            process.nextTick (function(){ self.setup (function(){
-                process.nextTick (function(){ job (cleanup); });
-            }); });
-        else
-            process.nextTick (function(){ job (cleanup); });
-    }
-
-    startJob (callback);
-};
-
-}).call(this,require('_process'))
-},{"_process":9}],227:[function(require,module,exports){
-(function (Buffer){
-
-/**     @module filth
-    Simple utility methods.
-*/
-module.exports.getTypeStr   = getTypeStr;
-module.exports.clone        = clone;
-module.exports.merge        = merge;
-module.exports.inherit      = inherit;
-module.exports.compare      = compare;
-module.exports.Lock         = require ('./lib/Lock');
-
-
-/**     @property/Function getTypeStr
-    Gets a proper type name for a reference, in all lowercase.
-@argument obj
-*/
-var typeGetter = ({}).toString;
-// browser safing
-var buff;
-try { buff = Buffer; } catch (err) { buff = {}; }
-function getTypeStr (obj) {
-    var tstr = typeGetter.apply(obj).slice(8,-1).toLowerCase();
-    if (tstr == 'object' && obj instanceof Buffer) return 'buffer';
-    return tstr;
-}
-
-
-/**     @property/Function clone
-    Create a JSON-identical duplicate of a reference with no refs in common.
-@argument obj
-*/
-function clone (target) {
-    var objType = getTypeStr (target);
-    switch (objType) {
-        case 'function':
-            throw new Error ('cannot clone Functions');
-        case 'undefined':
-            return undefined;
-        case 'number':
-            return Number (target); // otherwise you get heap Numbers instead of natives... it's weird.
-        case 'string':
-            return String (target); // otherwise you get heap Strings instead of natives... it's weird.
-        case 'boolean':
-            return Boolean (target); // otherwise you get heap Strings instead of natives... it's weird.
-        case 'array':
-            return target.slice().map(clone);
-        case 'object':
-            var newObj = {};
-            var keys = Object.keys(target);
-            for (var i=0,j=keys.length; i<j; i++)
-                newObj[keys[i]] = clone (target[keys[i]]);
-            return newObj;
-        default:
-            throw new Error ('cannot clone type "'+objType+'"');
-    }
-}
-
-
-/**     @property/Function merge
-    Overwrite properties on an object with those of another object, recursing into Objects and
-    Arrays.
-@argument obj
-*/
-function merge (target, source) {
-    var keys = Object.keys (source);
-    for (var i=0,j=keys.length; i<j; i++) {
-        var key = keys[i];
-        var val = source[key];
-        if (!Object.hasOwnProperty.call (target, key)) {
-            target[key] = val;
-            continue;
-        }
-        var type = getTypeStr (val);
-        if (type != getTypeStr (target[key])) {
-            target[key] = val;
-            continue;
-        }
-        if (type == 'object')
-            merge (target[key], val);
-        else if (type == 'array')
-            mergeArray (target[key], val);
-        else
-            target[key] = val;
-    }
-}
-
-function mergeArray (target, source) {
-    for (var i=0,j=source.length; i<j; i++) {
-        var val = source[i];
-        if (i > target.length) {
-            target[i] = val;
-            continue;
-        }
-        var type = getTypeStr (val);
-        if (type != getTypeStr (target[i])) {
-            target[i] = val;
-            continue;
-        }
-        if (type == 'object')
-            merge (target[i], val);
-        else if (type == 'array')
-            mergeArray (target[i], val);
-        else
-            target[i] = val;
-    }
-}
-
-
-/**     @property/Function inherit
-    Perform a simple prototype inheritence operation to cause the first argument to inherit from the
-    last.
-*/
-function inherit (child, parent) {
-    var dummy = function(){};
-    dummy.prototype = parent.prototype;
-    dummy = new dummy();
-    var keys = Object.keys (child.prototype);
-    for (var i=0,j=keys.length; i<j; i++) {
-        var key = keys[i];
-        dummy[key] = child.prototype[key];
-    }
-    child.prototype = dummy;
-}
-
-
-/**     @property/Function compare
-
-*/
-function compare (objA, objB) {
-    var keys = Object.keys (objA);
-    for (var i=0,j=keys.length; i<j; i++) {
-        var key = keys[i];
-        if (!Object.hasOwnProperty.call (objB, key))
-            return false;
-        var itemA = objA[key];
-        var itemB = objB[key];
-        var aType = getTypeStr (itemA);
-        var bType = getTypeStr (itemB);
-        if (aType != bType) return false;
-        if (aType == 'object')
-            if (compare (itemA, itemB))
-                continue;
-            else
-                return false;
-        if (aType == 'array')
-            if (itemA.length != itemB.length || compareArrays (itemA, itemB))
-                return false;
-            else
-                continue;
-        if (itemA !== itemB)
-            return false;
-    }
-    return true;
-}
-
-function compareArrays (arrA, arrB) {
-    for (var i=0,j=arrA.length; i<j; i++) {
-        var itemA = arrA[i];
-        var itemB = arrB[i];
-        var aType = getTypeStr (itemA);
-        var bType = getTypeStr (itemB);
-        if (aType != bType) return false;
-        if (aType == 'object')
-            if (compare (itemA, itemB))
-                continue;
-            else
-                return false;
-        if (aType == 'array')
-            if (itemA.length != itemB.length || compareArrays (itemA, itemB))
-                return false;
-            else
-                continue;
-        if (itemA !== itemB)
-            return false;
-    }
-}
-
-}).call(this,require("buffer").Buffer)
-},{"./lib/Lock":226,"buffer":2}],228:[function(require,module,exports){
+},{}],227:[function(require,module,exports){
 
 /*      @member/Function window.Element#addClass
 Add a css classname to the class attribute.
@@ -31850,7 +31781,7 @@ Object.addPermanent (window.Element.prototype, "setClass", function (classname) 
     return this;
 });
 
-},{}],229:[function(require,module,exports){
+},{}],228:[function(require,module,exports){
 (function (Buffer){
 
 /**     @function Object.typeStr
@@ -31997,7 +31928,7 @@ Object.addPermanent (Object, 'deepEqual', function (first, second) {
 });
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":2}],230:[function(require,module,exports){
+},{"buffer":2}],229:[function(require,module,exports){
 
 /**     @property/Object Object.DROP_LISTENER
     This constant is used with event listeners. Throwing it during an event handler will efficiently
@@ -32168,7 +32099,7 @@ Object.addPermanent (window.Element.prototype, "dropAllEvents", function (event)
     return this;
 });
 
-},{}],231:[function(require,module,exports){
+},{}],230:[function(require,module,exports){
 
 var OPTIMIZE_APPEND_DOC_FRAG = 3;
 
@@ -32463,7 +32394,7 @@ Object.addPermanent (window.Element.prototype, "setText", function (text) {
     return this;
 });
 
-},{}],232:[function(require,module,exports){
+},{}],231:[function(require,module,exports){
 
 /**     @property/Function Object.addPermanent
     Attaches a non-enumerable static property to an arbitrary Object. Usually used to attach
@@ -32488,7 +32419,7 @@ function addPermanent (target, name, value) {
 };
 addPermanent (Object, 'addPermanent', addPermanent);
 
-},{}],233:[function(require,module,exports){
+},{}],232:[function(require,module,exports){
 
 /**     @class Node
     DOM Nodes receive a variety of utilities grafted directly onto the prototype, for stylishly
@@ -32516,7 +32447,7 @@ require ('./lib/Classes');
 require ('./lib/Events');
 require ('./lib/Positioning');
 
-},{"./lib/Classes":228,"./lib/DataTools":229,"./lib/Events":230,"./lib/Positioning":231,"./lib/addPermanent":232}],"client":[function(require,module,exports){
+},{"./lib/Classes":227,"./lib/DataTools":228,"./lib/Events":229,"./lib/Positioning":230,"./lib/addPermanent":231}],"client":[function(require,module,exports){
 
 require ('scum');
 var marked = require ('marked');
@@ -32540,4 +32471,4 @@ window.on ('load', function(){
     BodyNode.innerHTML = marked (BodyNode.textContent);
 });
 
-},{"highlight.js":33,"marked":164,"scum":233,"substation":165}]},{},[]);
+},{"highlight.js":33,"marked":164,"scum":232,"substation":165}]},{},[]);

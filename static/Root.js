@@ -6525,110 +6525,6 @@ function hasOwnProperty(obj, prop) {
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./support/isBuffer":30,"_process":9,"inherits":7}],32:[function(require,module,exports){
-(function (process){
-
-var Server = require ('./browser/Server');
-var MultimediaStream = require ('./browser/MultimediaStream');
-var EventEmitter = require ('events').EventEmitter;
-var url = require ('url');
-
-var eventQueue = {};
-
-
-/**     @module substation
-    @super EventEmitter
-    Realtime application gateway and authentication provider.
-*/
-var servers = {};
-var core = new EventEmitter();
-module.exports = core;
-core.MultimediaStream = MultimediaStream;
-core.getUserMedia = MultimediaStream.getUserMedia;
-
-
-/**     @property/Function inherit
-    There are two big issues with `util.inherits`: It won't work with IE <9 and you have to bundle
-    the entire `util` package to get it. This version works around both issues.
-@argument/Function child
-@argument/Function parent
-*/
-core.inherit = require ('./browser/inherit');
-
-
-/**     @property/Function emit
-
-*/
-core.emit = function (eventName) {
-    if (this.listeners (eventName).length)
-        return EventEmitter.prototype.emit.apply (this, arguments);
-    if (Object.hasOwnProperty.call (eventQueue, eventName))
-        eventQueue[eventName].push (arguments);
-    else
-        eventQueue[eventName] = [ arguments ];
-};
-core.on ('newListener', function (event, listener) {
-    if (!Object.hasOwnProperty.call (eventQueue, event))
-        return;
-
-    var queue = eventQueue[event];
-    delete eventQueue[event];
-    var i=0, j=queue.length;
-    process.nextTick (function queueStep(){
-        EventEmitter.emit.apply (core, queue[i]);
-        i++;
-        if (i >= j)
-            return;
-        process.nextTick (queueStep);
-    });
-});
-
-
-/**     @property/Function getServer
-
-@argument/String path
-@returns/substation.Server server
-*/
-function getServer (path, options) {
-    var host = path ? url.parse (path) : window.location;
-    if (!host) throw new Error ('invalid url');
-    if (Object.hasOwnProperty.call (servers, host)) {
-        var server = servers[host];
-        if (options)
-            server.updateOptions (options);
-        return server;
-    }
-    return servers[host] = new Server (core, host, options);
-}
-core.getServer = getServer;
-
-
-/**     @property/Function sendEvents
-    Fire an Array of events from the module Object and this domain's Server instance, if it already
-    exists.
-*/
-function sendEvents (events) {
-    for (var i=0,j=events.length; i<j; i++)
-        core.emit.apply (core, events[i]);
-}
-core.sendEvents = sendEvents;
-
-
-/**     @property/events.EventEmitter otherTabs
-    @super events.EventEmitter
-    Emit events from the `otherTabs` Object in other tabs.
-*/
-window.otherTabs = new EventEmitter();
-window.otherTabs.emit = function(){
-    var info = Array.prototype.slice.call (arguments);
-    window.localStorage.setItem ('__substation_event', JSON.stringify (info));
-};
-window.addEventListener ('storage', function (event) {
-    if (event.key != '__substation_event') return;
-    EventEmitter.prototype.emit.apply (otherTabs.emitter, JSON.parse (event.newValue));
-});
-
-}).call(this,require('_process'))
-},{"./browser/MultimediaStream":33,"./browser/Server":35,"./browser/inherit":36,"_process":9,"events":6,"url":29}],33:[function(require,module,exports){
 
 var MediaStream =
     window.MediaStream
@@ -6961,7 +6857,7 @@ MultimediaStream.prototype.toURL = function(){
     return this.url || ( this.url = URL.createObjectURL (this.stream) );
 };
 
-},{"./inherit":36,"events":6}],34:[function(require,module,exports){
+},{"./inherit":35,"events":6}],33:[function(require,module,exports){
 (function (process){
 
 var EventEmitter = require ('events').EventEmitter;
@@ -7708,7 +7604,7 @@ Peer.prototype.listeners = function(){
 module.exports = Peer;
 
 }).call(this,require('_process'))
-},{"./MultimediaStream":33,"_process":9,"async":37,"events":6}],35:[function(require,module,exports){
+},{"./MultimediaStream":32,"_process":9,"async":36,"events":6}],34:[function(require,module,exports){
 (function (process){
 
 var http = require ('http-browserify');
@@ -8452,7 +8348,7 @@ Server.prototype.sendPeerMessage = function (msg) {
 module.exports = Server;
 
 }).call(this,require('_process'))
-},{"./Peer":34,"./inherit":36,"_process":9,"buffer":2,"events":6,"filth":38,"http-browserify":39,"socket.io-client":44,"url":29}],36:[function(require,module,exports){
+},{"./Peer":33,"./inherit":35,"_process":9,"buffer":2,"events":6,"filth":37,"http-browserify":38,"socket.io-client":43,"url":29}],35:[function(require,module,exports){
 
 function inherit (child, parent) {
     var dummy = function(){};
@@ -8468,7 +8364,7 @@ function inherit (child, parent) {
 
 module.exports = inherit;
 
-},{}],37:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 (function (process){
 /*!
  * async
@@ -9595,7 +9491,7 @@ module.exports = inherit;
 }());
 
 }).call(this,require('_process'))
-},{"_process":9}],38:[function(require,module,exports){
+},{"_process":9}],37:[function(require,module,exports){
 (function (Buffer){
 
 /**     @module filth
@@ -9774,7 +9670,7 @@ function compareArrays (arrA, arrB) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":2}],39:[function(require,module,exports){
+},{"buffer":2}],38:[function(require,module,exports){
 var http = module.exports;
 var EventEmitter = require('events').EventEmitter;
 var Request = require('./lib/request');
@@ -9920,7 +9816,7 @@ http.STATUS_CODES = {
     510 : 'Not Extended',               // RFC 2774
     511 : 'Network Authentication Required' // RFC 6585
 };
-},{"./lib/request":40,"events":6,"url":29}],40:[function(require,module,exports){
+},{"./lib/request":39,"events":6,"url":29}],39:[function(require,module,exports){
 var Stream = require('stream');
 var Response = require('./response');
 var Base64 = require('Base64');
@@ -10131,7 +10027,7 @@ var isXHR2Compatible = function (obj) {
     if (typeof FormData !== 'undefined' && obj instanceof FormData) return true;
 };
 
-},{"./response":41,"Base64":42,"inherits":43,"stream":27}],41:[function(require,module,exports){
+},{"./response":40,"Base64":41,"inherits":42,"stream":27}],40:[function(require,module,exports){
 var Stream = require('stream');
 var util = require('util');
 
@@ -10254,7 +10150,7 @@ var isArray = Array.isArray || function (xs) {
     return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{"stream":27,"util":31}],42:[function(require,module,exports){
+},{"stream":27,"util":31}],41:[function(require,module,exports){
 ;(function () {
 
   var object = typeof exports != 'undefined' ? exports : this; // #8: web workers
@@ -10316,13 +10212,13 @@ var isArray = Array.isArray || function (xs) {
 
 }());
 
-},{}],43:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 arguments[4][7][0].apply(exports,arguments)
-},{"dup":7}],44:[function(require,module,exports){
+},{"dup":7}],43:[function(require,module,exports){
 
 module.exports = require('./lib/');
 
-},{"./lib/":45}],45:[function(require,module,exports){
+},{"./lib/":44}],44:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -10411,7 +10307,7 @@ exports.connect = lookup;
 exports.Manager = require('./manager');
 exports.Socket = require('./socket');
 
-},{"./manager":46,"./socket":48,"./url":49,"debug":53,"socket.io-parser":89}],46:[function(require,module,exports){
+},{"./manager":45,"./socket":47,"./url":48,"debug":52,"socket.io-parser":88}],45:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -10916,7 +10812,7 @@ Manager.prototype.onreconnect = function(){
   this.emitAll('reconnect', attempt);
 };
 
-},{"./on":47,"./socket":48,"./url":49,"backo2":50,"component-bind":51,"component-emitter":52,"debug":53,"engine.io-client":54,"indexof":85,"object-component":86,"socket.io-parser":89}],47:[function(require,module,exports){
+},{"./on":46,"./socket":47,"./url":48,"backo2":49,"component-bind":50,"component-emitter":51,"debug":52,"engine.io-client":53,"indexof":84,"object-component":85,"socket.io-parser":88}],46:[function(require,module,exports){
 
 /**
  * Module exports.
@@ -10942,7 +10838,7 @@ function on(obj, ev, fn) {
   };
 }
 
-},{}],48:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -11329,7 +11225,7 @@ Socket.prototype.disconnect = function(){
   return this;
 };
 
-},{"./on":47,"component-bind":51,"component-emitter":52,"debug":53,"has-binary":83,"socket.io-parser":89,"to-array":93}],49:[function(require,module,exports){
+},{"./on":46,"component-bind":50,"component-emitter":51,"debug":52,"has-binary":82,"socket.io-parser":88,"to-array":92}],48:[function(require,module,exports){
 (function (global){
 
 /**
@@ -11406,7 +11302,7 @@ function url(uri, loc){
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"debug":53,"parseuri":87}],50:[function(require,module,exports){
+},{"debug":52,"parseuri":86}],49:[function(require,module,exports){
 
 /**
  * Expose `Backoff`.
@@ -11493,7 +11389,7 @@ Backoff.prototype.setJitter = function(jitter){
 };
 
 
-},{}],51:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 /**
  * Slice reference.
  */
@@ -11518,7 +11414,7 @@ module.exports = function(obj, fn){
   }
 };
 
-},{}],52:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -11684,7 +11580,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],53:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 
 /**
  * Expose `debug()` as the module.
@@ -11823,11 +11719,11 @@ try {
   if (window.localStorage) debug.enable(localStorage.debug);
 } catch(e){}
 
-},{}],54:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 
 module.exports =  require('./lib/');
 
-},{"./lib/":55}],55:[function(require,module,exports){
+},{"./lib/":54}],54:[function(require,module,exports){
 
 module.exports = require('./socket');
 
@@ -11839,7 +11735,7 @@ module.exports = require('./socket');
  */
 module.exports.parser = require('engine.io-parser');
 
-},{"./socket":56,"engine.io-parser":68}],56:[function(require,module,exports){
+},{"./socket":55,"engine.io-parser":67}],55:[function(require,module,exports){
 (function (global){
 /**
  * Module dependencies.
@@ -12548,7 +12444,7 @@ Socket.prototype.filterUpgrades = function (upgrades) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./transport":57,"./transports":58,"component-emitter":52,"debug":65,"engine.io-parser":68,"indexof":85,"parsejson":79,"parseqs":80,"parseuri":81}],57:[function(require,module,exports){
+},{"./transport":56,"./transports":57,"component-emitter":51,"debug":64,"engine.io-parser":67,"indexof":84,"parsejson":78,"parseqs":79,"parseuri":80}],56:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -12709,7 +12605,7 @@ Transport.prototype.onClose = function () {
   this.emit('close');
 };
 
-},{"component-emitter":52,"engine.io-parser":68}],58:[function(require,module,exports){
+},{"component-emitter":51,"engine.io-parser":67}],57:[function(require,module,exports){
 (function (global){
 /**
  * Module dependencies
@@ -12766,7 +12662,7 @@ function polling(opts){
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./polling-jsonp":59,"./polling-xhr":60,"./websocket":62,"xmlhttprequest":63}],59:[function(require,module,exports){
+},{"./polling-jsonp":58,"./polling-xhr":59,"./websocket":61,"xmlhttprequest":62}],58:[function(require,module,exports){
 (function (global){
 
 /**
@@ -13003,7 +12899,7 @@ JSONPPolling.prototype.doWrite = function (data, fn) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./polling":61,"component-inherit":64}],60:[function(require,module,exports){
+},{"./polling":60,"component-inherit":63}],59:[function(require,module,exports){
 (function (global){
 /**
  * Module requirements.
@@ -13391,7 +13287,7 @@ function unloadHandler() {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./polling":61,"component-emitter":52,"component-inherit":64,"debug":65,"xmlhttprequest":63}],61:[function(require,module,exports){
+},{"./polling":60,"component-emitter":51,"component-inherit":63,"debug":64,"xmlhttprequest":62}],60:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -13638,7 +13534,7 @@ Polling.prototype.uri = function(){
   return schema + '://' + this.hostname + port + this.path + query;
 };
 
-},{"../transport":57,"component-inherit":64,"debug":65,"engine.io-parser":68,"parseqs":80,"xmlhttprequest":63}],62:[function(require,module,exports){
+},{"../transport":56,"component-inherit":63,"debug":64,"engine.io-parser":67,"parseqs":79,"xmlhttprequest":62}],61:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -13878,7 +13774,7 @@ WS.prototype.check = function(){
   return !!WebSocket && !('__initialize' in WebSocket && this.name === WS.prototype.name);
 };
 
-},{"../transport":57,"component-inherit":64,"debug":65,"engine.io-parser":68,"parseqs":80,"ws":82}],63:[function(require,module,exports){
+},{"../transport":56,"component-inherit":63,"debug":64,"engine.io-parser":67,"parseqs":79,"ws":81}],62:[function(require,module,exports){
 // browser shim for xmlhttprequest module
 var hasCORS = require('has-cors');
 
@@ -13916,7 +13812,7 @@ module.exports = function(opts) {
   }
 }
 
-},{"has-cors":77}],64:[function(require,module,exports){
+},{"has-cors":76}],63:[function(require,module,exports){
 
 module.exports = function(a, b){
   var fn = function(){};
@@ -13924,7 +13820,7 @@ module.exports = function(a, b){
   a.prototype = new fn;
   a.prototype.constructor = a;
 };
-},{}],65:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -14073,7 +13969,7 @@ function load() {
 
 exports.enable(load());
 
-},{"./debug":66}],66:[function(require,module,exports){
+},{"./debug":65}],65:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -14272,7 +14168,7 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":67}],67:[function(require,module,exports){
+},{"ms":66}],66:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -14385,7 +14281,7 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],68:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
 (function (global){
 /**
  * Module dependencies.
@@ -14983,7 +14879,7 @@ exports.decodePayloadAsBinary = function (data, binaryType, callback) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./keys":69,"after":70,"arraybuffer.slice":71,"base64-arraybuffer":72,"blob":73,"has-binary":74,"utf8":76}],69:[function(require,module,exports){
+},{"./keys":68,"after":69,"arraybuffer.slice":70,"base64-arraybuffer":71,"blob":72,"has-binary":73,"utf8":75}],68:[function(require,module,exports){
 
 /**
  * Gets the keys for an object.
@@ -15004,7 +14900,7 @@ module.exports = Object.keys || function keys (obj){
   return arr;
 };
 
-},{}],70:[function(require,module,exports){
+},{}],69:[function(require,module,exports){
 module.exports = after
 
 function after(count, callback, err_cb) {
@@ -15034,7 +14930,7 @@ function after(count, callback, err_cb) {
 
 function noop() {}
 
-},{}],71:[function(require,module,exports){
+},{}],70:[function(require,module,exports){
 /**
  * An abstraction for slicing an arraybuffer even when
  * ArrayBuffer.prototype.slice is not supported
@@ -15065,7 +14961,7 @@ module.exports = function(arraybuffer, start, end) {
   return result.buffer;
 };
 
-},{}],72:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 /*
  * base64-arraybuffer
  * https://github.com/niklasvh/base64-arraybuffer
@@ -15126,7 +15022,7 @@ module.exports = function(arraybuffer, start, end) {
   };
 })("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 
-},{}],73:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 (function (global){
 /**
  * Create a blob builder even when vendor prefixes exist
@@ -15179,7 +15075,7 @@ module.exports = (function() {
 })();
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],74:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 (function (global){
 
 /*
@@ -15241,9 +15137,9 @@ function hasBinary(data) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"isarray":75}],75:[function(require,module,exports){
+},{"isarray":74}],74:[function(require,module,exports){
 arguments[4][8][0].apply(exports,arguments)
-},{"dup":8}],76:[function(require,module,exports){
+},{"dup":8}],75:[function(require,module,exports){
 (function (global){
 /*! http://mths.be/utf8js v2.0.0 by @mathias */
 ;(function(root) {
@@ -15486,7 +15382,7 @@ arguments[4][8][0].apply(exports,arguments)
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],77:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -15511,7 +15407,7 @@ try {
   module.exports = false;
 }
 
-},{"global":78}],78:[function(require,module,exports){
+},{"global":77}],77:[function(require,module,exports){
 
 /**
  * Returns `this`. Execute this without a "context" (i.e. without it being
@@ -15521,7 +15417,7 @@ try {
 
 module.exports = (function () { return this; })();
 
-},{}],79:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 (function (global){
 /**
  * JSON parse.
@@ -15556,7 +15452,7 @@ module.exports = function parsejson(data) {
   }
 };
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],80:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 /**
  * Compiles a querystring
  * Returns string representation of the object
@@ -15595,7 +15491,7 @@ exports.decode = function(qs){
   return qry;
 };
 
-},{}],81:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 /**
  * Parses an URI
  *
@@ -15636,7 +15532,7 @@ module.exports = function parseuri(str) {
     return uri;
 };
 
-},{}],82:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -15681,7 +15577,7 @@ function ws(uri, protocols, opts) {
 
 if (WebSocket) ws.prototype = WebSocket.prototype;
 
-},{}],83:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 (function (global){
 
 /*
@@ -15743,9 +15639,9 @@ function hasBinary(data) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"isarray":84}],84:[function(require,module,exports){
+},{"isarray":83}],83:[function(require,module,exports){
 arguments[4][8][0].apply(exports,arguments)
-},{"dup":8}],85:[function(require,module,exports){
+},{"dup":8}],84:[function(require,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -15756,7 +15652,7 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],86:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 
 /**
  * HOP ref.
@@ -15841,7 +15737,7 @@ exports.length = function(obj){
 exports.isEmpty = function(obj){
   return 0 == exports.length(obj);
 };
-},{}],87:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 /**
  * Parses an URI
  *
@@ -15868,7 +15764,7 @@ module.exports = function parseuri(str) {
   return uri;
 };
 
-},{}],88:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 (function (global){
 /*global Blob,File*/
 
@@ -16013,7 +15909,7 @@ exports.removeBlobs = function(data, callback) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./is-buffer":90,"isarray":91}],89:[function(require,module,exports){
+},{"./is-buffer":89,"isarray":90}],88:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -16415,7 +16311,7 @@ function error(data){
   };
 }
 
-},{"./binary":88,"./is-buffer":90,"component-emitter":52,"debug":53,"isarray":91,"json3":92}],90:[function(require,module,exports){
+},{"./binary":87,"./is-buffer":89,"component-emitter":51,"debug":52,"isarray":90,"json3":91}],89:[function(require,module,exports){
 (function (global){
 
 module.exports = isBuf;
@@ -16432,9 +16328,9 @@ function isBuf(obj) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],91:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 arguments[4][8][0].apply(exports,arguments)
-},{"dup":8}],92:[function(require,module,exports){
+},{"dup":8}],91:[function(require,module,exports){
 /*! JSON v3.2.6 | http://bestiejs.github.io/json3 | Copyright 2012-2013, Kit Cambridge | http://kit.mit-license.org */
 ;(function (window) {
   // Convenience aliases.
@@ -17297,7 +17193,7 @@ arguments[4][8][0].apply(exports,arguments)
   }
 }(this));
 
-},{}],93:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 module.exports = toArray
 
 function toArray(list, index) {
@@ -17312,7 +17208,7 @@ function toArray(list, index) {
     return array
 }
 
-},{}],94:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 
 /*      @member/Function window.Element#addClass
 Add a css classname to the class attribute.
@@ -17376,7 +17272,7 @@ Object.addPermanent (window.Element.prototype, "setClass", function (classname) 
     return this;
 });
 
-},{}],95:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 (function (Buffer){
 
 /**     @function Object.typeStr
@@ -17523,7 +17419,7 @@ Object.addPermanent (Object, 'deepEqual', function (first, second) {
 });
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":2}],96:[function(require,module,exports){
+},{"buffer":2}],95:[function(require,module,exports){
 
 /**     @property/Object Object.DROP_LISTENER
     This constant is used with event listeners. Throwing it during an event handler will efficiently
@@ -17694,7 +17590,7 @@ Object.addPermanent (window.Element.prototype, "dropAllEvents", function (event)
     return this;
 });
 
-},{}],97:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 
 var OPTIMIZE_APPEND_DOC_FRAG = 3;
 
@@ -17989,7 +17885,7 @@ Object.addPermanent (window.Element.prototype, "setText", function (text) {
     return this;
 });
 
-},{}],98:[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 
 /**     @property/Function Object.addPermanent
     Attaches a non-enumerable static property to an arbitrary Object. Usually used to attach
@@ -18014,7 +17910,7 @@ function addPermanent (target, name, value) {
 };
 addPermanent (Object, 'addPermanent', addPermanent);
 
-},{}],99:[function(require,module,exports){
+},{}],98:[function(require,module,exports){
 
 /**     @class Node
     DOM Nodes receive a variety of utilities grafted directly onto the prototype, for stylishly
@@ -18042,59 +17938,202 @@ require ('./lib/Classes');
 require ('./lib/Events');
 require ('./lib/Positioning');
 
-},{"./lib/Classes":94,"./lib/DataTools":95,"./lib/Events":96,"./lib/Positioning":97,"./lib/addPermanent":98}],"client":[function(require,module,exports){
+},{"./lib/Classes":93,"./lib/DataTools":94,"./lib/Events":95,"./lib/Positioning":96,"./lib/addPermanent":97}],"client":[function(require,module,exports){
 
 require ('scum');
-var substation = require ('substation');
-var homebase = substation.getServer();
 
-STATUS_CLASS = {
-    locked:             'error',
-    "not confirmed":    'notReady',
-    offline:            'notReady',
-    ready:              '',
-    online:             ''
-};
+var HELLO = [
+    'hallo',
+    'salve',
+    'p&#xEB;rsh&#xEB;ndetje', // 'përshëndetje',
+    '&#x645;&#x631;&#x62D;&#x628;&#x627;', // 'مرحبا',
+    'kaixo',
+    '&#x9B9;&#x9CD;&#x9AF;&#x9BE;&#x9B2;&#x9CB;', // 'হ্যালো',
+    '&#x1019;&#x1004;&#x103A;&#x1039;&#x1002;&#x101C;&#x102C;&#x1015;&#x102B;', // 'မင်္ဂလာပါ',
+    '&#x60A8;&#x597D;', // '您好',
+    '&#x3A7;&#x3B1;&#x3AF;&#x3C1;&#x3B5;&#x3C4;&#x3B5;', // 'Χαίρετε',
+    'bonjour',
+    '&#xE2A;&#xE27;&#xE31;&#xE2A;&#xE14;&#xE35;', // 'สวัสดี',
+    '&#x417;&#x434;&#x440;&#x430;&#x432;&#x441;&#x442;&#x432;&#x443;&#x439;&#x442;&#x435;', // 'Здравствуйте',
+    'sannu',
+    'alo',
+    'ol&#xE1;', // 'olá',
+    'ahoj',
+    '&#x3053;&#x3093;&#x306B;&#x3061;&#x306F;', // 'こんにちは',
+    'dia duit',
+    'sveiki',
+    '&#xA38;&#xA24; &#xA38;&#xA4D;&#xA30;&#xA40; &#xA05;&#xA15;&#xA3E;&#xA32;', // 'ਸਤ ਸ੍ਰੀ ਅਕਾਲ',
+    '&#xC548;&#xB155;&#xD558;&#xC138;&#xC694;', // '안녕하세요',
+    '&#x939;&#x945;&#x932;&#x94B;' // 'हॅलो'
+];
+var LAST = [ 3, 7 ];
+function getNextText(){
+    var next;
+    while (LAST.indexOf (next = Math.floor (HELLO.length * Math.random())) >= 0);
+    LAST.push (next);
+    LAST.shift();
+    return HELLO[next] + (Math.random() > 0.5 ? '?' : '!');
+}
 
-substation.on ('domainStatus', function (domain, status, bandwidth, actions, events) {
-    if (domain != window.domain)
-        return;
+window.on ('load', function(){
+    var BubbleField = window.document.getElementById ('BubbleField');
+    var BubbleSides = window.document.getElementById ('BubbleSides');
 
-    var statusElem = document.getElementById ('Status');
-    statusElem.setText (status);
-    statusElem.setClass (STATUS_CLASS[status]);
+    var width = BubbleField.clientWidth;
+    var sides = width - window.document.body.clientWidth;
+    var sideHalf = sides / 2;
+    var sidesHeight = BubbleSides.clientHeight;
 
-    var ConfirmArea = document.getElementById ('ConfirmArea');
-    if (ConfirmArea)
-        ConfirmArea.dispose();
+    var fieldTotal = width * BubbleField.clientHeight;
+    var pixelCount = fieldTotal + (sides * sidesHeight);
+
+    function drawNextBubble(){
+        var rand = Math.random();
+        var delay = Math.max (300, Math.min (1500, 1500 * rand * rand));
+        setTimeout (function(){
+            var nextBubble = window.document.createElement ('div');
+            nextBubble.className = 'bubble';
+            nextBubble.innerHTML = getNextText();
+
+            setTimeout (function(){
+                nextBubble.addClass ('visible');
+                var disappearDelay = Math.max (750, Math.min (1500, 2000 * rand * rand));
+                setTimeout (function(){
+                    nextBubble.dropClass ('visible');
+                    setTimeout (function(){ nextBubble.dispose(); }, 1000);
+                }, disappearDelay);
+            });
+
+            // position the bubble
+            var pixel = Math.floor (pixelCount * Math.random());
+            if (pixel < fieldTotal) {
+                var left = pixel % width;
+                var top = Math.floor (pixel / width);
+                nextBubble.setAttribute ('style', 'top:'+top+'px;left:'+left+'px;');
+                BubbleField.appendChild (nextBubble);
+                return drawNextBubble();
+            }
+
+            pixel -= fieldTotal;
+            var left = pixel % sides;
+            var top = Math.floor (pixel / sides);
+            var styleStr = 'top:'+top+'px;';
+            if (left > sideHalf)
+                styleStr += 'right:' + (left - sideHalf) + 'px;';
+            else
+                styleStr += 'left:' + left + 'px;';
+
+            nextBubble.setAttribute ('style', 'top:'+top+'px;left:'+left+'px;');
+            BubbleSides.appendChild (nextBubble);
+            drawNextBubble();
+        }, delay);
+    }
+
+    drawNextBubble();
 });
 
-var document = window.document;
-window.on ('load', function(){
-    var ConfirmDomainForm = document.getElementById ('Confirm');
-    if (ConfirmDomainForm)
-        ConfirmDomainForm.on ('submit', function(){
-            homebase.action (
-                'PUT',
-                window.location.pathname,
-                { confirmed:true },
-                function (err, status, body) {
-                    console.log (err, status, body);
-                }
-            );
-            return false;
-        });
+},{"scum":98}],"substation":[function(require,module,exports){
+(function (process){
+
+var Server = require ('./browser/Server');
+var MultimediaStream = require ('./browser/MultimediaStream');
+var EventEmitter = require ('events').EventEmitter;
+var url = require ('url');
+
+var eventQueue = {};
 
 
-    var DangerScreen = document.getElementById ('DangerScreen');
-    DangerScreen.on ('click', function(){
-        var open = window.confirm (
-            "Are you sure you want to unlock the Dangerous Options? They're really dangerous!"
-        );
-        if (!open)
+/**     @module substation
+    @super EventEmitter
+    Realtime application gateway and authentication provider.
+*/
+var servers = {};
+var core = new EventEmitter();
+module.exports = core;
+core.MultimediaStream = MultimediaStream;
+core.getUserMedia = MultimediaStream.getUserMedia;
+
+
+/**     @property/Function inherit
+    There are two big issues with `util.inherits`: It won't work with IE <9 and you have to bundle
+    the entire `util` package to get it. This version works around both issues.
+@argument/Function child
+@argument/Function parent
+*/
+core.inherit = require ('./browser/inherit');
+
+
+/**     @property/Function emit
+
+*/
+core.emit = function (eventName) {
+    if (this.listeners (eventName).length)
+        return EventEmitter.prototype.emit.apply (this, arguments);
+    if (Object.hasOwnProperty.call (eventQueue, eventName))
+        eventQueue[eventName].push (arguments);
+    else
+        eventQueue[eventName] = [ arguments ];
+};
+core.on ('newListener', function (event, listener) {
+    if (!Object.hasOwnProperty.call (eventQueue, event))
+        return;
+
+    var queue = eventQueue[event];
+    delete eventQueue[event];
+    var i=0, j=queue.length;
+    process.nextTick (function queueStep(){
+        EventEmitter.emit.apply (core, queue[i]);
+        i++;
+        if (i >= j)
             return;
-        DangerScreen.dispose();
+        process.nextTick (queueStep);
     });
 });
 
-},{"scum":99,"substation":32}]},{},[]);
+
+/**     @property/Function getServer
+
+@argument/String path
+@returns/substation.Server server
+*/
+function getServer (path, options) {
+    var host = path ? url.parse (path) : window.location;
+    if (!host) throw new Error ('invalid url');
+    if (Object.hasOwnProperty.call (servers, host)) {
+        var server = servers[host];
+        if (options)
+            server.updateOptions (options);
+        return server;
+    }
+    return servers[host] = new Server (core, host, options);
+}
+core.getServer = getServer;
+
+
+/**     @property/Function sendEvents
+    Fire an Array of events from the module Object and this domain's Server instance, if it already
+    exists.
+*/
+function sendEvents (events) {
+    for (var i=0,j=events.length; i<j; i++)
+        core.emit.apply (core, events[i]);
+}
+core.sendEvents = sendEvents;
+
+
+/**     @property/events.EventEmitter otherTabs
+    @super events.EventEmitter
+    Emit events from the `otherTabs` Object in other tabs.
+*/
+window.otherTabs = new EventEmitter();
+window.otherTabs.emit = function(){
+    var info = Array.prototype.slice.call (arguments);
+    window.localStorage.setItem ('__substation_event', JSON.stringify (info));
+};
+window.addEventListener ('storage', function (event) {
+    if (event.key != '__substation_event') return;
+    EventEmitter.prototype.emit.apply (otherTabs.emitter, JSON.parse (event.newValue));
+});
+
+}).call(this,require('_process'))
+},{"./browser/MultimediaStream":32,"./browser/Server":34,"./browser/inherit":35,"_process":9,"events":6,"url":29}]},{},[]);
