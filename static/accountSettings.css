@@ -1,0 +1,19 @@
+
+.section {
+    border-top: 0.1em solid #cacaca;
+    margin-top: 2em;
+    padding: 1em 0.5em;
+}
+
+#Payment {
+
+}
+
+#ChangePassword {
+
+}
+
+.basic {
+    font-size: 125%;
+    color: #666;
+}

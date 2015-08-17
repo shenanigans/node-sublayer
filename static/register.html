@@ -8,7 +8,7 @@
     <script type="text/javascript" src="captcha.js"></script>
     <script type="text/javascript">
         function isEmail (str) {
-            return true;
+            return str.match (/.+@.+\..+/);
         }
         window.onload = function(){
             createCheckbox();
@@ -23,7 +23,7 @@
                 if (
                     nameInput.value.length >= 3
                  && nameInput.value.length <= 32
-                 && isEmail (emailInput)
+                 && isEmail (emailInput.value)
                  && passInput.value.length >= 7
                  && passInput.value.length <= 255
                  && confirmInput.value == passInput.value

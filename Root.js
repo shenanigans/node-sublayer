@@ -82,7 +82,7 @@ window.on ('load', function(){
             else
                 styleStr += 'left:' + left + 'px;';
 
-            nextBubble.setAttribute ('style', 'top:'+top+'px;left:'+left+'px;');
+            nextBubble.setAttribute ('style', styleStr);
             BubbleSides.appendChild (nextBubble);
             drawNextBubble();
         }, delay);

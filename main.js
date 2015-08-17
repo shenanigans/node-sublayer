@@ -27,6 +27,8 @@ var ConfirmActions   = require ('./lib/ControlActions/confirm');
 var DomainPage       = require ('./lib/ControlActions/domainPage');
 var NotificationPage = require ('./lib/ControlActions/notificationPage');
 var InvoicePage      = require ('./lib/ControlActions/invoicePage');
+var Recovery         = require ('./lib/ControlActions/Recovery');
+var accountSettings  = require ('./lib/ControlActions/accountSettings');
 
 // Handlebars helpers
 Handlebars.registerHelper ('json', JSON.stringify);
@@ -155,6 +157,7 @@ var DEFAULT_CONFIG = {
     domainCollectionName:       "Domain",
     userCollectionName:         "User",
     usernameCollectionName:     "Username",
+    recoveryCollectionName:     "Recovery",
     clientCollectionName:       "Client",
     confirmationCollectionName: "Confirm",
     notificationCollectionName: "Notice",
@@ -247,6 +250,11 @@ sublayer.prototype.listen = function (port, adminPort, callback) {
     this.adminRouter.addAction ('GET', new RegExp ('/domainPage/(\\d+)$'), DomainPage.GET);
     this.adminRouter.addAction ('GET', new RegExp ('/notificationPage/(\\d+)$'), NotificationPage.GET);
     this.adminRouter.addAction ('GET', new RegExp ('/invoicePage/(\\d+)$'), InvoicePage.GET);
+    this.adminRouter.addAction ('GET', new RegExp ('/accountSettings$'), accountSettings.GET);
+    this.adminRouter.addAction ('POST', new RegExp ('/accountSettings$'), accountSettings.POST);
+    this.adminRouter.addAction ('POST', new RegExp ('/recovery$'), Recovery.POST);
+    this.adminRouter.addAction ('GET', new RegExp ('/recovery/([\\w\\-_]+)$'), Recovery.GET);
+    this.adminRouter.addAction ('PUT', new RegExp ('/recovery/([\\w\\-_]+)$'), Recovery.PUT);
     // GET root
     this.adminRouter.addAction ('GET', undefined, RootActions.GET);
 
@@ -288,6 +296,16 @@ sublayer.prototype.listen = function (port, adminPort, callback) {
                         return process.exit (1);
                     }
                     self.UsernameCollection = collection;
+                    callback();
+                });
+            },
+            function (callback) {
+                Database.collection (self.config.recoveryCollectionName, function (err, collection) {
+                    if (err) {
+                        self.logger.fatal (err);
+                        return process.exit (1);
+                    }
+                    self.RecoveryCollection = collection;
                     callback();
                 });
             },

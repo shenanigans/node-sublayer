@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+    <script type="text/javascript">
+    Stripe.setPublishableKey ("pk_test_wT1YzvaWlKbsWx8PD5Ur9Zgw");
+
+    function addCard(){
+        try {
+            console.log ('addCard');
+            var SubmitButton = window.document.getElementById ('SubmitCard');
+            SubmitButton.setAttribute ('disabled', 'true');
+            var CardForm = window.document.getElementById ('CardForm');
+            Stripe.card.createToken (CardForm, function (status, response) {
+                SubmitButton.removeAttribute ('disabled');
+                console.log (status, response);
+            });
+            return false;
+        } catch (err) {
+            console.log (err);
+            return false;
+        }
+    }
+    </script>
+    <title>Sublayer.io</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="/static/site.css" />
+    <link rel="stylesheet" type="text/css" href="/static/forms.css" />
+    <link rel="stylesheet" type="text/css" href="/static/accountSettings.css" />
+</head>
+<body>
+    <div id="Header">
+        <div id="HeaderContent">
+            <a id="Hero" href="/">Sublayer.io</a>
+            <div id="Nav">
+                <a href="/static/news.html">News</a><a href="/static/pricing.html">Pricing</a><a href="/static/docs/index.html">Documentation</a>
+            </div>
+            <form id="Auth" action="/logout" method="GET">
+                <a class="selected"><img src="/static/gear.png" /></a><input type="submit" value="log out" />
+            </form>
+        </div>
+    </div>
+    <h1>Account Settings</h1>
+    <div class="basic">{{username}}</div>
+    <div class="basic">{{email}}</div>
+    <div id="Payment" class="section">
+        <h2>Payment Information</h2>
+        <form action="" method="POST" id="CardForm" onsubmit="return addCard()">
+            <h3>Add a new Card</h3>
+            <div class="payment-errors"></div>
+
+            <label for="CardNumber">credit card number</label>
+            <input type="text" size="20" data-stripe="number" />
+            <br />
+
+            <label for="CardNumber">CVC</label>
+            <input id="CVC" type="text" size="4" data-stripe="cvc" />
+            <br />
+
+            <label for="Expiration">expiration (MM/YYYY)</label>
+            <span id="Expiration"><input type="text" size="2" data-stripe="exp-month" />/<input type="text" size="4" data-stripe="exp-year" />
+            <br />
+
+            <input id="SubmitCard" type="submit" value="new card" />
+        </form>
+    </div>
+    <div id="ChangePassword" class="section">
+        <h2>Change Password</h2>
+    </div>
+    <div id="Footer">
+
+    </div>
+</body>
+</html>

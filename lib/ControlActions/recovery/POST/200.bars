@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript">
+        require ('client');
+    </script>
+    <title>Sublayer.io</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="/static/site.css" />
+    <link rel="stylesheet" type="text/css" href="/static/forms.css" />
+    <link rel="stylesheet" type="text/css" href="/static/accountSettings.css" />
+</head>
+<body>
+    <div id="Header">
+        <div id="HeaderContent">
+            <a id="Hero" href="/">Sublayer.io</a>
+            <div id="Nav">
+                <a href="/static/news.html">News</a><a href="/static/pricing.html">Pricing</a><a href="/static/docs/index.html">Documentation</a>
+            </div>
+            <form id="Auth" action="/logout" method="GET">
+                <a class="selected"><img src="/static/gear.png" /></a><input type="submit" value="log out" />
+            </form>
+        </div>
+    </div>
+    <h1>Recovery Email Sent</h1>
+    <p>An email was sent to your inbox with further instructions. You will be able to set a new password and regain access to your account.</p>
+    <div id="Footer">
+
+    </div>
+</body>
+</html>
